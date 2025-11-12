@@ -1,0 +1,64 @@
+name: Laravel + Vite CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2️⃣ Setup PHP (for Laravel)
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      # 3️⃣ Setup Node.js (for npm build)
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      # 4️⃣ Install dependencies
+      - name: Install Composer dependencies
+        run: composer install --no-dev --optimize-autoloader
+
+      - name: Install NPM dependencies
+        run: npm ci
+
+      # 5️⃣ Build frontend (Vite)
+      - name: Build frontend assets
+        run: npm run build
+
+      # 6️⃣ Zip the project (exclude unnecessary files)
+      - name: Package for deployment
+        run: |
+          zip -r deploy.zip . -x "*.git*" "node_modules/*" ".env" "storage/*"
+          
+          echo "--- Verifying Zip File Integrity ---"
+          unzip -t deploy.zip
+          echo "--- Zip File OK ---"
+          
+      # 7️⃣ Setup SSH to server
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SERVER_KEY }}
+
+      # 8️⃣ Upload and deploy to Hestia
+      - name: Upload and extract on server
+        run: |
+          scp -o StrictHostKeyChecking=no deploy.zip ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }}:/home/${{ secrets.SERVER_USERNAME }}/deploy.zip
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} "
+            cd /home/${{ secrets.SERVER_USERNAME }}/web/dkhufra.my.id/public_html &&
+            unzip -o /home/${{ secrets.SERVER_USERNAME }}/deploy.zip &&
+            rm /home/${{ secrets.SERVER_USERNAME }}/deploy.zip &&
+            php artisan optimize
+          "

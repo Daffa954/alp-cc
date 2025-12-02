@@ -19,7 +19,6 @@ return new class extends Migration
             $table->string('category')->nullable();
             $table->text('description')->nullable();
             $table->decimal('amount', 12, 2)->default(0);
-            $table->timestamps(); // you can keep created_at/updated_at
         });
 
     }

@@ -22,7 +22,7 @@
         
         <!-- Add Income Button -->
         {{-- {{ route('income.create') }} --}}
-        <a href="" class="group relative overflow-hidden bg-slate-800/50 hover:bg-slate-800/80 border border-slate-700/50 hover:border-emerald-500/50 rounded-3xl p-8 transition-all duration-300 hover:shadow-2xl hover:shadow-emerald-500/20">
+        <a href="{{ route('income.create') }}" class="group relative overflow-hidden bg-slate-800/50 hover:bg-slate-800/80 border border-slate-700/50 hover:border-emerald-500/50 rounded-3xl p-8 transition-all duration-300 hover:shadow-2xl hover:shadow-emerald-500/20">
             <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-bl-full blur-2xl transition-all group-hover:bg-emerald-500/20"></div>
             
             <div class="relative z-10 flex flex-col items-center justify-center text-center space-y-4">
@@ -47,7 +47,7 @@
 
         <!-- Add Expense Button -->
         {{-- {{ route('expense.create') }} --}}
-        <a href="" class="group relative overflow-hidden bg-slate-800/50 hover:bg-slate-800/80 border border-slate-700/50 hover:border-rose-500/50 rounded-3xl p-8 transition-all duration-300 hover:shadow-2xl hover:shadow-rose-500/20">
+        <a href="{{ route('expense.create') }}" class="group relative overflow-hidden bg-slate-800/50 hover:bg-slate-800/80 border border-slate-700/50 hover:border-rose-500/50 rounded-3xl p-8 transition-all duration-300 hover:shadow-2xl hover:shadow-rose-500/20">
             <div class="absolute top-0 right-0 w-32 h-32 bg-rose-500/10 rounded-bl-full blur-2xl transition-all group-hover:bg-rose-500/20"></div>
             
             <div class="relative z-10 flex flex-col items-center justify-center text-center space-y-4">

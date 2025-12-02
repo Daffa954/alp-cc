@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('activity_id')->nullable()->constrained('activities')->onDelete('set null');
-            $table->timestamp('created_at')->useCurrent();
+            // $table->timestamp('created_at')->useCurrent();
             $table->string('category')->nullable();
             $table->text('description')->nullable();
             $table->decimal('amount', 12, 2)->default(0);

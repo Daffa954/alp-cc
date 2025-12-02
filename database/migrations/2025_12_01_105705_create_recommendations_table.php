@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('recommendations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('summary_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('summary_id')->nullable()->onDelete('cascade');
             $table->date('week_start')->nullable(); // optional copy of summary week_start
             $table->text('message')->nullable();
             $table->timestamps();

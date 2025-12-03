@@ -16,9 +16,11 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('activity_id')->nullable()->constrained('activities')->onDelete('set null');
             // $table->timestamp('created_at')->useCurrent();
+             $table->date('date')->nullable(); // TAMBAH INI - tanggal expense
             $table->string('category')->nullable();
             $table->text('description')->nullable();
             $table->decimal('amount', 12, 2)->default(0);
+            $table->timestamps();
         });
 
     }

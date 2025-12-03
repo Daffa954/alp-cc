@@ -1,58 +1,64 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finance Tracker</title>
+    <title>@yield('title') - FinanceTrack</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Animation definitions */
-        @keyframes blob {
-            0% { transform: translate(0px, 0px) scale(1); }
-            33% { transform: translate(30px, -50px) scale(1.1); }
-            66% { transform: translate(-20px, 20px) scale(0.9); }
-            100% { transform: translate(0px, 0px) scale(1); }
+        .gradient-bg {
+            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
         }
-        .animate-blob {
-            animation: blob 7s infinite;
+        .input-focus:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
-        .animation-delay-2000 { animation-delay: 2s; }
-        .animation-delay-4000 { animation-delay: 4s; }
-
-        /* Custom Scrollbar for nicer UX */
-        ::-webkit-scrollbar {
-            width: 8px;
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+            transition: all 0.3s ease;
         }
-        ::-webkit-scrollbar-track {
-            background: #0f172a; 
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
         }
-        ::-webkit-scrollbar-thumb {
-            background: #334155; 
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #475569; 
+        .card-shadow {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
         }
     </style>
 </head>
-<body class="bg-slate-900 min-h-screen font-sans text-slate-300 selection:bg-cyan-500 selection:text-white">
-
-    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div class="absolute top-0 -left-4 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-[128px] opacity-40 animate-blob"></div>
-        <div class="absolute top-0 -right-4 w-96 h-96 bg-cyan-500 rounded-full mix-blend-multiply filter blur-[128px] opacity-40 animate-blob animation-delay-2000"></div>
-        <div class="absolute -bottom-8 left-20 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-[128px] opacity-40 animate-blob animation-delay-4000"></div>
+<body class="bg-gray-50">
+    <!-- Background Decoration -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-40 -right-40 w-80 h-80 bg-blue-100 rounded-full mix-blend-multiply filter blur-xl opacity-70"></div>
+        <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-100 rounded-full mix-blend-multiply filter blur-xl opacity-70"></div>
     </div>
 
-    <div class="relative z-10 min-h-screen flex flex-col items-center justify-center p-4 md:p-6 lg:p-8">
-        
-        <div class="w-full max-w-2xl">
+    <div class="relative min-h-screen flex items-center justify-center px-4 py-12">
+        <div class="w-full max-w-md">
+            <!-- Logo/Brand -->
+            <div class="text-center mb-8">
+                <div class="flex justify-center mb-4">
+                    <div class="gradient-bg w-16 h-16 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-chart-line text-white text-2xl"></i>
+                    </div>
+                </div>
+                <h1 class="text-3xl font-bold text-slate-800">FinanceTrack</h1>
+                <p class="text-slate-500 mt-2">Kelola keuangan dengan mudah</p>
+            </div>
+
+            <!-- Content -->
             @yield('content')
-        </div>
 
-        <div class="mt-8 text-slate-500 text-xs text-center">
-            &copy; {{ date('Y') }} Finance AI. All rights reserved.
+            <!-- Footer -->
+            <div class="text-center mt-8">
+                <p class="text-slate-500 text-sm">
+                    &copy; {{ date('Y') }} FinanceTrack. All rights reserved.
+                </p>
+            </div>
         </div>
     </div>
 
+    @yield('scripts')
 </body>
 </html>

@@ -1,160 +1,265 @@
 @extends('layouts.auth')
 
+@section('title', 'Daftar')
+
 @section('content')
-<div class="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden">
-    
-    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500"></div>
-    
-    <div class="text-center mb-6 relative">
-        <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 mb-3 shadow-lg shadow-cyan-500/20">
-            <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-            </svg>
-        </div>
-        <h2 class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 mb-1 tracking-tight">
-            Create Account
-        </h2>
-        <p class="text-slate-400 text-sm">
-            Start your financial journey with AI-powered insights
-        </p>
-    </div>
+<div class="bg-white card-shadow rounded-2xl p-8">
+    <h2 class="text-2xl font-bold text-slate-800 text-center mb-6">Buat Akun Baru</h2>
 
-    <form action="{{ route('register') }}" method="POST" class="space-y-5">
+    @if($errors->any())
+        <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-exclamation-circle text-red-500"></i>
+                </div>
+                <div class="ml-3">
+                    @foreach($errors->all() as $error)
+                        <p class="text-sm text-red-700">{{ $error }}</p>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <form method="POST" action="{{ route('register') }}">
         @csrf
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="group">
-                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 group-focus-within:text-cyan-400 transition-colors">
-                    Full Name
-                </label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <svg class="h-5 w-5 text-slate-500 group-focus-within:text-cyan-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                    </div>
-                    <input type="text" name="name" 
-                        class="w-full bg-slate-900/50 border border-slate-700 rounded-xl pl-11 pr-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all duration-300 text-sm" 
-                        placeholder="John Doe">
-                </div>
+
+        <!-- Name -->
+        <div class="mb-6">
+            <label for="name" class="block text-sm font-medium text-slate-700 mb-2">
+                <i class="fas fa-user mr-2 text-blue-500"></i>Nama Lengkap
+            </label>
+            <input
+                type="text"
+                id="name"
+                name="name"
+                value="{{ old('name') }}"
+                required
+                autofocus
+                class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus transition duration-200 focus:outline-none"
+                placeholder="John Doe"
+            >
+        </div>
+
+        <!-- Email -->
+        <div class="mb-6">
+            <label for="email" class="block text-sm font-medium text-slate-700 mb-2">
+                <i class="fas fa-envelope mr-2 text-blue-500"></i>Alamat Email
+            </label>
+            <input
+                type="email"
+                id="email"
+                name="email"
+                value="{{ old('email') }}"
+                required
+                class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus transition duration-200 focus:outline-none"
+                placeholder="nama@email.com"
+            >
+        </div>
+
+        <!-- Password -->
+        <div class="mb-6">
+            <label for="password" class="block text-sm font-medium text-slate-700 mb-2">
+                <i class="fas fa-lock mr-2 text-blue-500"></i>Password
+            </label>
+            <div class="relative">
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    required
+                    class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus transition duration-200 focus:outline-none"
+                    placeholder="Minimal 8 karakter"
+                >
+                <button type="button" onclick="togglePassword()" class="absolute right-3 top-3 text-slate-400 hover:text-slate-600">
+                    <i class="fas fa-eye" id="toggleIcon"></i>
+                </button>
             </div>
+            <div class="mt-2 text-xs text-slate-500">
+                <p>• Minimal 8 karakter</p>
+                <p>• Kombinasi huruf dan angka</p>
+            </div>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="mb-6">
+            <label for="password_confirmation" class="block text-sm font-medium text-slate-700 mb-2">
+                <i class="fas fa-lock mr-2 text-blue-500"></i>Konfirmasi Password
+            </label>
+            <div class="relative">
+                <input
+                    type="password"
+                    id="password_confirmation"
+                    name="password_confirmation"
+                    required
+                    class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus transition duration-200 focus:outline-none"
+                    placeholder="Ulangi password"
+                >
+                <button type="button" onclick="toggleConfirmPassword()" class="absolute right-3 top-3 text-slate-400 hover:text-slate-600">
+                    <i class="fas fa-eye" id="toggleConfirmIcon"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Optional Fields -->
+        <div class="mb-6">
+            <h3 class="text-sm font-medium text-slate-700 mb-3">
+                <i class="fas fa-info-circle mr-2 text-blue-500"></i>Informasi Tambahan (Opsional)
+            </h3>
             
-            <div class="group">
-                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 group-focus-within:text-cyan-400 transition-colors">
-                    Email Address
-                </label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <svg class="h-5 w-5 text-slate-500 group-focus-within:text-cyan-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
-                        </svg>
-                    </div>
-                    <input type="email" name="email" 
-                        class="w-full bg-slate-900/50 border border-slate-700 rounded-xl pl-11 pr-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all duration-300 text-sm" 
-                        placeholder="john@example.com">
+            <!-- Address -->
+            <div class="mb-4">
+                <label for="address" class="block text-sm text-slate-600 mb-2">Alamat</label>
+                <textarea
+                    id="address"
+                    name="address"
+                    rows="2"
+                    class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus transition duration-200 focus:outline-none"
+                    placeholder="Alamat lengkap"
+                >{{ old('address') }}</textarea>
+            </div>
+
+            <!-- Job -->
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="job" class="block text-sm text-slate-600 mb-2">Pekerjaan</label>
+                    <input
+                        type="text"
+                        id="job"
+                        name="job"
+                        value="{{ old('job') }}"
+                        class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus transition duration-200 focus:outline-none"
+                        placeholder="Posisi pekerjaan"
+                    >
+                </div>
+                <div>
+                    <label for="job_location" class="block text-sm text-slate-600 mb-2">Lokasi Kerja</label>
+                    <input
+                        type="text"
+                        id="job_location"
+                        name="job_location"
+                        value="{{ old('job_location') }}"
+                        class="w-full px-4 py-3 border border-slate-200 rounded-xl input-focus transition duration-200 focus:outline-none"
+                        placeholder="Kota"
+                    >
                 </div>
             </div>
         </div>
 
-        <div class="group">
-            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 group-focus-within:text-cyan-400 transition-colors">
-                Password
-            </label>
-            <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <svg class="h-5 w-5 text-slate-500 group-focus-within:text-cyan-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                    </svg>
-                </div>
-                <input type="password" name="password" 
-                    class="w-full bg-slate-900/50 border border-slate-700 rounded-xl pl-11 pr-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all duration-300 text-sm" 
-                    placeholder="Create a strong password">
-            </div>
-        </div>
-
-        <div class="relative my-4">
-            <div class="absolute inset-0 flex items-center">
-                <div class="w-full border-t border-slate-700/50"></div>
-            </div>
-            <div class="relative flex justify-center">
-                <span class="px-3 bg-slate-900/80 text-[10px] font-bold text-cyan-400 uppercase tracking-widest rounded-full backdrop-blur-sm border border-slate-700">
-                    Profile Context
+        <!-- Terms and Conditions -->
+        {{-- <div class="mb-6">
+            <label class="flex items-start">
+                <input type="checkbox" name="terms" required class="mt-1 h-4 w-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                <span class="ml-2 text-sm text-slate-600">
+                    Saya setuju dengan
+                    <a href="#" class="text-blue-600 hover:text-blue-500">Syarat & Ketentuan</a>
+                    dan
+                    <a href="#" class="text-blue-600 hover:text-blue-500">Kebijakan Privasi</a>
                 </span>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="group">
-                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 group-focus-within:text-blue-400 transition-colors">
-                    Current Job
-                </label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <svg class="h-5 w-5 text-slate-500 group-focus-within:text-blue-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                        </svg>
-                    </div>
-                    <input type="text" name="job" 
-                        class="w-full bg-slate-900/50 border border-slate-700 rounded-xl pl-11 pr-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-300 text-sm" 
-                        placeholder="e.g. Student">
-                </div>
-            </div>
-
-            <div class="group">
-                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 group-focus-within:text-blue-400 transition-colors">
-                    Work Location
-                </label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <svg class="h-5 w-5 text-slate-500 group-focus-within:text-blue-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                    </div>
-                    <input type="text" name="job_location" 
-                        class="w-full bg-slate-900/50 border border-slate-700 rounded-xl pl-11 pr-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-300 text-sm" 
-                        placeholder="e.g. Campus">
-                </div>
-            </div>
-        </div>
-
-        <div class="group">
-            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 group-focus-within:text-blue-400 transition-colors">
-                Home Address
             </label>
-            <div class="relative">
-                <div class="absolute top-3 left-0 pl-4 flex items-start pointer-events-none">
-                    <svg class="h-5 w-5 text-slate-500 group-focus-within:text-blue-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                    </svg>
-                </div>
-                <textarea name="address" rows="2" 
-                    class="w-full bg-slate-900/50 border border-slate-700 rounded-xl pl-11 pr-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-300 resize-none text-sm" 
-                    placeholder="Where do you commute from?"></textarea>
-            </div>
-        </div>
+        </div> --}}
 
-        <button type="submit" 
-            class="w-full bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 hover:from-cyan-500 hover:via-blue-500 hover:to-purple-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-cyan-500/50 transform transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group">
-            <span class="relative z-10 flex items-center justify-center gap-2">
-                <span>Create Account</span>
-                <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-            </span>
-            <div class="absolute inset-0 bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <!-- Submit Button -->
+        <button type="submit" class="w-full btn-primary text-white font-semibold py-3 px-4 rounded-xl mb-6">
+            Buat Akun <i class="fas fa-user-plus ml-2"></i>
         </button>
 
+        <!-- Divider -->
+        <div class="relative mb-6">
+            <div class="absolute inset-0 flex items-center">
+                <div class="w-full border-t border-slate-200"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+                <span class="px-4 bg-white text-slate-500">Atau daftar dengan</span>
+            </div>
+        </div>
+
+        <!-- Social Register -->
+        
+        <!-- Login Link -->
         <div class="text-center">
-            <span class="text-slate-400 text-xs">Already have an account? </span>
-            <a href="{{ route('login') }}" 
-                class="text-xs text-cyan-400 hover:text-blue-400 transition-colors font-bold inline-flex items-center gap-1 group">
-                <span>Sign In</span>
-                <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-            </a>
+            <p class="text-sm text-slate-600">
+                Sudah punya akun?
+                <a href="{{ route('login') }}" class="font-semibold text-blue-600 hover:text-blue-500 transition">
+                    Masuk di sini
+                </a>
+            </p>
         </div>
     </form>
 </div>
+
+<!-- Progress Steps -->
+<div class="mt-8">
+    <div class="flex items-center justify-center">
+        <div class="flex items-center">
+            <div class="gradient-bg w-8 h-8 rounded-full flex items-center justify-center">
+                <i class="fas fa-user text-white text-xs"></i>
+            </div>
+            <div class="w-16 h-1 bg-blue-200 mx-2"></div>
+            <div class="w-8 h-8 rounded-full border-2 border-blue-200 flex items-center justify-center">
+                <span class="text-xs text-blue-300">2</span>
+            </div>
+            <div class="w-16 h-1 bg-blue-200 mx-2"></div>
+            <div class="w-8 h-8 rounded-full border-2 border-blue-200 flex items-center justify-center">
+                <span class="text-xs text-blue-300">3</span>
+            </div>
+        </div>
+    </div>
+    <div class="flex justify-between mt-2 text-xs text-slate-500">
+        <span>Informasi</span>
+        <span>Verifikasi</span>
+        <span>Selesai</span>
+    </div>
+</div>
+@endsection
+
+@section('scripts')
+<script>
+    function togglePassword() {
+        const passwordInput = document.getElementById('password');
+        const toggleIcon = document.getElementById('toggleIcon');
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            toggleIcon.classList.remove('fa-eye');
+            toggleIcon.classList.add('fa-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            toggleIcon.classList.remove('fa-eye-slash');
+            toggleIcon.classList.add('fa-eye');
+        }
+    }
+
+    function toggleConfirmPassword() {
+        const confirmInput = document.getElementById('password_confirmation');
+        const toggleIcon = document.getElementById('toggleConfirmIcon');
+        
+        if (confirmInput.type === 'password') {
+            confirmInput.type = 'text';
+            toggleIcon.classList.remove('fa-eye');
+            toggleIcon.classList.add('fa-eye-slash');
+        } else {
+            confirmInput.type = 'password';
+            toggleIcon.classList.remove('fa-eye-slash');
+            toggleIcon.classList.add('fa-eye');
+        }
+    }
+
+    // Validasi real-time password match
+    document.getElementById('password_confirmation').addEventListener('input', function() {
+        const password = document.getElementById('password').value;
+        const confirm = this.value;
+        const button = document.querySelector('button[type="submit"]');
+        
+        if (confirm && password !== confirm) {
+            this.classList.add('border-red-300');
+            button.disabled = true;
+            button.classList.add('opacity-50', 'cursor-not-allowed');
+        } else {
+            this.classList.remove('border-red-300');
+            button.disabled = false;
+            button.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+    });
+</script>
 @endsection

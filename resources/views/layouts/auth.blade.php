@@ -43,7 +43,7 @@
                         <i class="fas fa-chart-line text-white text-2xl"></i>
                     </div>
                 </div>
-                <h1 class="text-3xl font-bold text-slate-800">FinanceTrack</h1>
+                <h1 class="text-3xl font-bold text-slate-800">FinanceHub</h1>
                 <p class="text-slate-500 mt-2">Kelola keuangan dengan mudah</p>
             </div>
 

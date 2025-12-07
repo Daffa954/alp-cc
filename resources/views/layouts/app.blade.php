@@ -229,9 +229,10 @@
         });
     </script>
 </body>
-</html> --}} 
+</html> --}}
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -245,53 +246,63 @@
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    
+
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Font Awesome -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
-    
+
     <style>
         .sidebar {
             transition: all 0.3s ease;
         }
+
         .stat-card {
             background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
             transition: all 0.3s ease;
             border: 1px solid #333;
         }
+
         .stat-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 15px 30px rgba(255, 107, 0, 0.15);
             border-color: #ff6b00;
         }
+
         .active-nav {
             background: linear-gradient(90deg, rgba(255, 107, 0, 0.2) 0%, transparent 100%);
             border-left: 4px solid #ff6b00;
             color: #ff6b00 !important;
         }
+
         .btn-primary {
             background: linear-gradient(135deg, #ff6b00 0%, #ff8c42 100%);
             transition: all 0.3s ease;
         }
+
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(255, 107, 0, 0.3);
         }
+
         .gradient-bg {
             background: linear-gradient(135deg, #ff6b00 0%, #ff8c42 100%);
         }
+
         .text-orange {
             color: #ff6b00;
         }
+
         .bg-orange {
             background-color: #ff6b00;
         }
+
         .border-orange {
             border-color: #ff6b00;
         }
     </style>
 </head>
+
 <body class="font-sans antialiased bg-gray-900">
     <div class="min-h-screen flex">
         <!-- Sidebar -->
@@ -318,38 +329,46 @@
 
                 <!-- Navigation -->
                 <nav class="space-y-1">
-                    <a href="{{ route('dashboard') }}" class="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange rounded-xl transition {{ request()->routeIs('dashboard') ? 'active-nav' : '' }}">
+                    <a href="{{ route('dashboard') }}"
+                        class="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange rounded-xl transition {{ request()->routeIs('dashboard') ? 'active-nav' : '' }}">
                         <i class="fas fa-home w-5"></i>
                         <span>Dashboard</span>
                     </a>
-                    <a href="" class="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange rounded-xl transition">
+                    <a href="{{ route('expenses.index') }}"
+                        class="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange rounded-xl transition">
                         <i class="fas fa-receipt w-5"></i>
                         <span>Expenses</span>
                     </a>
-                    <a href="" class="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange rounded-xl transition">
+                    <a href="{{ route('incomes.index') }}"
+                        class="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange rounded-xl transition">
                         <i class="fas fa-money-bill-wave w-5"></i>
                         <span>Income</span>
                     </a>
-                    <a href="" class="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange rounded-xl transition">
+                    <a href="{{ route('activities.index') }}"
+                        class="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange rounded-xl transition">
                         <i class="fas fa-map-marker-alt w-5"></i>
                         <span>Activities</span>
                     </a>
-                    <a href="" class="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange rounded-xl transition">
+                    <a 
+                        class="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange rounded-xl transition">
                         <i class="fas fa-chart-bar w-5"></i>
                         <span>Reports</span>
                     </a>
-                    <a href="" class="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange rounded-xl transition">
+                    <a href=""
+                        class="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange rounded-xl transition">
                         <i class="fas fa-piggy-bank w-5"></i>
                         <span>Budgets</span>
                     </a>
                     <div class="pt-4 mt-4 border-t border-gray-700">
-                        <a href="{{ route('profile.edit') }}" class="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange rounded-xl transition">
+                        <a href="{{ route('profile.edit') }}"
+                            class="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange rounded-xl transition">
                             <i class="fas fa-user-cog w-5"></i>
                             <span>Settings</span>
                         </a>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <button type="submit" class="flex items-center space-x-3 w-full px-4 py-3 text-gray-300 hover:bg-red-900 hover:text-red-400 rounded-xl transition">
+                            <button type="submit"
+                                class="flex items-center space-x-3 w-full px-4 py-3 text-gray-300 hover:bg-red-900 hover:text-red-400 rounded-xl transition">
                                 <i class="fas fa-sign-out-alt w-5"></i>
                                 <span>Logout</span>
                             </button>
@@ -362,7 +381,8 @@
         <!-- Mobile Sidebar -->
         <div class="md:hidden fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 z-50">
             <div class="flex justify-around py-3">
-                <a href="{{ route('dashboard') }}" class="flex flex-col items-center text-gray-300 hover:text-orange transition">
+                <a href="{{ route('dashboard') }}"
+                    class="flex flex-col items-center text-gray-300 hover:text-orange transition">
                     <i class="fas fa-home"></i>
                     <span class="text-xs mt-1">Home</span>
                 </a>
@@ -378,7 +398,8 @@
                     <i class="fas fa-chart-bar"></i>
                     <span class="text-xs mt-1">Reports</span>
                 </a>
-                <a href="{{ route('profile.edit') }}" class="flex flex-col items-center text-gray-300 hover:text-orange transition">
+                <a href="{{ route('profile.edit') }}"
+                    class="flex flex-col items-center text-gray-300 hover:text-orange transition">
                     <i class="fas fa-user"></i>
                     <span class="text-xs mt-1">Profile</span>
                 </a>
@@ -399,30 +420,34 @@
                             <p class="text-sm text-gray-400">@yield('header-subtitle', 'Overview of your finances')</p>
                         </div>
                     </div>
-                    
+
                     <div class="flex items-center space-x-4">
                         <!-- Notifications -->
                         <button class="relative p-2 text-gray-300 hover:text-orange">
                             <i class="fas fa-bell text-xl"></i>
                             <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
                         </button>
-                        
+
                         <!-- Quick Add -->
                         <div class="relative">
                             <button id="quickAddBtn" class="btn-primary text-white px-4 py-2 rounded-xl">
                                 <i class="fas fa-plus mr-2"></i>Quick Add
                             </button>
                             <!-- Quick Add Dropdown -->
-                            <div id="quickAddMenu" class="hidden absolute right-0 mt-2 w-48 bg-gray-800 rounded-xl shadow-lg border border-gray-700 py-2 z-50">
-                                <a href="" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange transition">
+                            <div id="quickAddMenu"
+                                class="hidden absolute right-0 mt-2 w-48 bg-gray-800 rounded-xl shadow-lg border border-gray-700 py-2 z-50">
+                                <a href=""
+                                    class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange transition">
                                     <i class="fas fa-minus-circle text-red-400 mr-3"></i>
                                     <span>Add Expense</span>
                                 </a>
-                                <a href="" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange transition">
+                                <a href=""
+                                    class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange transition">
                                     <i class="fas fa-plus-circle text-green-400 mr-3"></i>
                                     <span>Add Income</span>
                                 </a>
-                                <a href="" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange transition">
+                                <a href=""
+                                    class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange transition">
                                     <i class="fas fa-map-marker-alt text-blue-400 mr-3"></i>
                                     <span>Add Activity</span>
                                 </a>
@@ -443,7 +468,7 @@
     <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-70 z-40 hidden"></div>
 
     @stack('scripts')
-    
+
     <script>
         // Toggle Mobile Sidebar
         document.getElementById('sidebarToggle').addEventListener('click', function() {
@@ -475,11 +500,12 @@
         document.addEventListener('click', function(event) {
             const quickAddBtn = document.getElementById('quickAddBtn');
             const quickAddMenu = document.getElementById('quickAddMenu');
-            
+
             if (!quickAddBtn.contains(event.target) && !quickAddMenu.contains(event.target)) {
                 quickAddMenu.classList.add('hidden');
             }
         });
     </script>
 </body>
+
 </html>

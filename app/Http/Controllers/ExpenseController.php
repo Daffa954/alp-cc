@@ -38,7 +38,7 @@ class ExpenseController extends Controller
             ->orderByDesc('total')
             ->get();
         
-        return view('expenses.index', compact('expenses', 'totalExpense', 'averageDaily', 'categories'));
+        return view('expenseIndex', compact('expenses', 'totalExpense', 'averageDaily', 'categories'));
     }
 
     /**
@@ -69,7 +69,7 @@ class ExpenseController extends Controller
             'other' => 'Other'
         ];
         
-        return view('expenses.create', compact('recentActivities', 'categories'));
+        return view('expenseCreate', compact('recentActivities', 'categories'));
     }
 
     /**
@@ -77,6 +77,11 @@ class ExpenseController extends Controller
      */
     public function store(Request $request)
     {
+        if ($request->has('amount')) {
+        $request->merge([
+            'amount' => str_replace('.', '', $request->input('amount'))
+        ]);
+    }
         $validated = $request->validate([
             'amount' => 'required|numeric|min:0',
             'category' => 'required|string|max:100',

@@ -9,7 +9,7 @@ class Expense extends Model
 {
     /** @use HasFactory<\Database\Factories\ExpenseFactory> */
     use HasFactory;
-    protected $fillable = ['user_id','activity_id','category','description','amount'];
+    protected $fillable = ['user_id','activity_id','category','description','amount', 'date'];
 
     public function user() { return $this->belongsTo(User::class); }
     public function activity() { return $this->belongsTo(Activity::class); }

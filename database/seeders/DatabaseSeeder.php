@@ -30,7 +30,6 @@ class DatabaseSeeder extends Seeder
             ->has(Activity::factory()->count(3))
             ->has(Income::factory()->count(2))
             ->has(Expense::factory()->count(5))
-            ->has(Summary::factory()->count(4))
             ->create();
 
         // or create some direct factories connecting entities

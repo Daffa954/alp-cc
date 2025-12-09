@@ -106,76 +106,76 @@ class ExpenseController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Expense $expense)
-    {
-        $this->authorize('view', $expense);
+    // public function show(Expense $expense)
+    // {
+    //     $this->authorize('view', $expense);
         
-        return view('expenses.show', compact('expense'));
-    }
+    //     return view('expenses.show', compact('expense'));
+    // }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Expense $expense)
-    {
-        $this->authorize('update', $expense);
+    // /**
+    //  * Show the form for editing the specified resource.
+    //  */
+    // public function edit(Expense $expense)
+    // {
+    //     $this->authorize('update', $expense);
         
-        $user = Auth::user();
-        $recentActivities = Activity::where('user_id', $user->id)
-            ->orderBy('date_start', 'desc')
-            ->limit(10)
-            ->get();
+    //     $user = Auth::user();
+    //     $recentActivities = Activity::where('user_id', $user->id)
+    //         ->orderBy('date_start', 'desc')
+    //         ->limit(10)
+    //         ->get();
         
-        $categories = [
-            'food' => 'Food & Dining',
-            'transportation' => 'Transportation',
-            'shopping' => 'Shopping',
-            'entertainment' => 'Entertainment',
-            'housing' => 'Housing & Utilities',
-            'health' => 'Health & Medical',
-            'education' => 'Education',
-            'personal' => 'Personal Care',
-            'travel' => 'Travel',
-            'gifts' => 'Gifts & Donations',
-            'other' => 'Other'
-        ];
+    //     $categories = [
+    //         'food' => 'Food & Dining',
+    //         'transportation' => 'Transportation',
+    //         'shopping' => 'Shopping',
+    //         'entertainment' => 'Entertainment',
+    //         'housing' => 'Housing & Utilities',
+    //         'health' => 'Health & Medical',
+    //         'education' => 'Education',
+    //         'personal' => 'Personal Care',
+    //         'travel' => 'Travel',
+    //         'gifts' => 'Gifts & Donations',
+    //         'other' => 'Other'
+    //     ];
         
-        return view('expenses.edit', compact('expense', 'recentActivities', 'categories'));
-    }
+    //     return view('expenses.edit', compact('expense', 'recentActivities', 'categories'));
+    // }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Expense $expense)
-    {
-        $this->authorize('update', $expense);
+    // /**
+    //  * Update the specified resource in storage.
+    //  */
+    // public function update(Request $request, Expense $expense)
+    // {
+    //     $this->authorize('update', $expense);
         
-        $validated = $request->validate([
-            'amount' => 'required|numeric|min:0',
-            'category' => 'required|string|max:100',
-            'description' => 'nullable|string|max:500',
-            'activity_id' => 'nullable|exists:activities,id',
-            'date' => 'required|date',
-        ]);
+    //     $validated = $request->validate([
+    //         'amount' => 'required|numeric|min:0',
+    //         'category' => 'required|string|max:100',
+    //         'description' => 'nullable|string|max:500',
+    //         'activity_id' => 'nullable|exists:activities,id',
+    //         'date' => 'required|date',
+    //     ]);
         
-        $expense->update($validated);
+    //     $expense->update($validated);
         
-        return redirect()->route('expenses.index')
-            ->with('success', 'Expense updated successfully!');
-    }
+    //     return redirect()->route('expenses.index')
+    //         ->with('success', 'Expense updated successfully!');
+    // }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Expense $expense)
-    {
-        $this->authorize('delete', $expense);
+    // /**
+    //  * Remove the specified resource from storage.
+    //  */
+    // public function destroy(Expense $expense)
+    // {
+    //     $this->authorize('delete', $expense);
         
-        $expense->delete();
+    //     $expense->delete();
         
-        return redirect()->route('expenses.index')
-            ->with('success', 'Expense deleted successfully!');
-    }
+    //     return redirect()->route('expenses.index')
+    //         ->with('success', 'Expense deleted successfully!');
+    // }
     
     /**
      * Quick add expense from dashboard

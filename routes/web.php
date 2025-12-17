@@ -33,7 +33,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     // Action Generate AI (POST)
     Route::post('/reports/generate', [ReportController::class, 'generate'])->name('reports.generate');
-
+Route::get('/reports/{id}', [ReportController::class, 'show'])->name('reports.show');
     // --- FITUR 2: CHATBOT ADVISOR ---
     // Halaman Chat
     // Route::get('/advisor', function () {

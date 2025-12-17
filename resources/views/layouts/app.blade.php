@@ -335,30 +335,26 @@
                         <span>Dashboard</span>
                     </a>
                     <a href="{{ route('expenses.index') }}"
-                        class="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange rounded-xl transition">
+                        class="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange rounded-xl transition {{ request()->routeIs('expenses.*') ? 'active-nav' : '' }}">
                         <i class="fas fa-receipt w-5"></i>
                         <span>Expenses</span>
                     </a>
                     <a href="{{ route('incomes.index') }}"
-                        class="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange rounded-xl transition">
+                        class="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange rounded-xl transition {{ request()->routeIs('incomes.*') ? 'active-nav' : '' }}">
                         <i class="fas fa-money-bill-wave w-5"></i>
                         <span>Income</span>
                     </a>
                     <a href="{{ route('activities.index') }}"
-                        class="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange rounded-xl transition">
+                        class="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange rounded-xl transition {{ request()->routeIs('activities.*') ? 'active-nav' : '' }}">
                         <i class="fas fa-map-marker-alt w-5"></i>
                         <span>Activities</span>
                     </a>
-                    <a 
-                        class="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange rounded-xl transition">
+                    <a href="{{ route('reports.index') }}"
+                        class="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange rounded-xl transition {{ request()->routeIs('reports.*') ? 'active-nav' : '' }}">
                         <i class="fas fa-chart-bar w-5"></i>
                         <span>Reports</span>
                     </a>
-                    <a href=""
-                        class="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange rounded-xl transition">
-                        <i class="fas fa-piggy-bank w-5"></i>
-                        <span>Budgets</span>
-                    </a>
+                    
                     <div class="pt-4 mt-4 border-t border-gray-700">
                         <a href="{{ route('profile.edit') }}"
                             class="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange rounded-xl transition">

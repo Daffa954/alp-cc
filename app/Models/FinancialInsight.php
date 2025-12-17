@@ -18,6 +18,7 @@ class FinancialInsight extends Model
         'period_key',        // '2025-12'
         'total_expense',
         'total_income',
+        'balance',
         'percentage_change', // Tren kenaikan/penurunan (%)
         'status',            // 'safe', 'warning', 'danger'
         'ai_analysis',       // Teks analisis kondisi

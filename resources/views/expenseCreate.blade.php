@@ -88,7 +88,7 @@
                         name="date"
                         required
                         class="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-[#ff6b00] focus:ring-1 focus:ring-[#ff6b00] transition-all"
-                        value="{{ old('date', date('Y-m-d')) }}"
+                        value="{{ old('date', request('date', date('Y-m-d'))) }}"
                         style="color-scheme: dark;" {{-- Agar icon kalender bawaan browser jadi putih --}}
                     >
                     @error('date')

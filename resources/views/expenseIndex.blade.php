@@ -3,7 +3,7 @@
     <x-slot name="header-subtitle">Kelola semua transaksi Anda</x-slot>
 
     <div class="py-6">
-        <div class="max-w-7xl mx-auto space-y-6">
+        <div class="max-w-7xl mx-auto space-y-6 pb-12 md:pb-0">
 
             <div class="flex justify-between items-center mb-6">
                 <h2 class="font-semibold text-xl text-white leading-tight">

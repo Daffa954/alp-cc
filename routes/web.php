@@ -7,6 +7,7 @@ use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\IncomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -35,11 +36,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::get('/reports/{id}', [ReportController::class, 'show'])->name('reports.show');
     // --- FITUR 2: CHATBOT ADVISOR ---
     // Halaman Chat
-    Route::get('/advisor', function () {
-        return view('advisor.index');
-    })->name('advisor.index');
-    // API Endpoint untuk kirim pesan ke AI
-    Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
+    // Route::get('/advisor', function () {
+    //     return view('advisor.index');
+    // })->name('advisor.index');
+    // // API Endpoint untuk kirim pesan ke AI
+    // Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
 });
 Route::get('/debug-gemini-models', function () {
     $apiKey = trim(env('GEMINI_API_KEY'));

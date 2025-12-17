@@ -456,6 +456,7 @@
             <!-- Main Content -->
             <main class="p-4 md:p-6">
                 {{ $slot }}
+                {{-- @yield('content') --}}
             </main>
         </div>
     </div>

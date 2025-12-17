@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header-title">Dashboard</x-slot>
-    <x-slot name="header-subtitle">Welcome back, {{ Auth::user()->name }}!</x-slot>
+    {{-- <x-slot name="header-subtitle">Welcome back, {{ Auth::user()->name }}!</x-slot> --}}
 
     <div class="space-y-6">
         <!-- Quick Stats -->

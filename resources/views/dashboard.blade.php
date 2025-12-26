@@ -95,13 +95,13 @@
                         <h4 id="dailySelectedDate" class="text-2xl font-black text-white tracking-tight">Detail Tanggal</h4>
                         <div class="flex flex-wrap justify-center gap-3">
                              <a id="btnDailyExpense" href="#" class="px-4 py-2 bg-red-500/10 text-red-400 border border-red-500/20 rounded-xl text-xs font-bold hover:bg-red-500 hover:text-white transition">
-                                <i class="fas fa-minus-circle mr-2"></i> Pengeluaran
+                                <i class="fas fa-minus-circle mr-2"></i> Expense
                             </a>
                             <a id="btnDailyIncome" href="#" class="px-4 py-2 bg-green-500/10 text-green-400 border border-green-500/20 rounded-xl text-xs font-bold hover:bg-green-500 hover:text-white transition">
-                                <i class="fas fa-plus-circle mr-2"></i> Pemasukan
+                                <i class="fas fa-plus-circle mr-2"></i> Income
                             </a>
                             <a id="btnDailyActivity" href="#" class="px-4 py-2 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-xl text-xs font-bold hover:bg-blue-500 hover:text-white transition">
-                                <i class="fas fa-running mr-2"></i> Aktivitas
+                                <i class="fas fa-running mr-2"></i> Activities
                             </a>
                         </div>
                     </div>

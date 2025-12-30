@@ -2,242 +2,239 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 use App\Models\Expense;
 use App\Models\Income;
+use App\Models\Activity;
 use App\Models\FinancialInsight;
-use App\Services\GeminiAgentService;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
+use App\Services\FinancialAiService;
 
 class ReportController extends Controller
 {
     public function index(Request $request)
     {
         $user = Auth::user();
-
         $type = $request->input('type', 'monthly');
         $date = $request->input('date', date('Y-m-d'));
-        $refDate = Carbon::parse($date);
 
-        if ($type === 'weekly') {
-            $periodKey = $refDate->format('o-W');
-        } else {
-            $periodKey = $refDate->format('Y-m');
-        }
+        $period = $this->getPeriodMetadata($type, $date);
 
-        // 1. Ambil Laporan Aktif (Sesuai Filter)
         $report = FinancialInsight::where('user_id', $user->id)
             ->where('type', $type)
-            ->where('period_key', $periodKey)
+            ->where('period_key', $period['key'])
             ->first();
-        // 2. LOGIKA BARU: Query Tanggal Transaksi Langsung dari Tabel Expense
-        $expenseDates = []; // Default kosong
 
-        if ($type === 'weekly') {
-            $start = $refDate->copy()->startOfWeek();
-            $end = $refDate->copy()->endOfWeek();
+        // --- PERBAIKAN: Ambil Semua Tanggal (Expense, Income, Activity) ---
+        // Ambil range view kalender (H-1 bulan s/d H+1 bulan agar navigasi lancar)
+        $viewStart = Carbon::parse($date)->startOfMonth()->subMonth(); 
+        $viewEnd   = Carbon::parse($date)->endOfMonth()->addMonth();
 
-            $expenseDates = Expense::where('user_id', $user->id)
-                ->whereBetween('date', [$start, $end])
-                ->pluck('date') // Ambil kolom tanggal saja
-                ->unique()      // Hapus duplikat
-                ->values()      // Reset index array
-                ->toArray();
-        } else {
-            // Bulanan
-            $expenseDates = Expense::where('user_id', $user->id)
-                ->whereMonth('date', $refDate->month)
-                ->whereYear('date', $refDate->year)
-                ->pluck('date')
-                ->unique()
-                ->values()
-                ->toArray();
-        }
-        // 2. TAMBAHAN: Ambil Riwayat Laporan (History)
-        // Mengambil 5 laporan terakhir selain laporan yang sedang ditampilkan
+        // Panggil helper baru
+        $dates = $this->getAllTransactionDates($user->id, $viewStart, $viewEnd);
+
         $history = FinancialInsight::where('user_id', $user->id)
-            ->where('id', '!=', $report->id ?? 0) // Jangan tampilkan yang sedang dibuka di atas
+            ->where('id', '!=', $report->id ?? 0)
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();
 
-        return view('reports.index', compact('report', 'type', 'date', 'history', 'expenseDates'));
+        // Kirim variabel 'dates' (bukan expenseDates)
+        return view('reports.index', compact('report', 'type', 'date', 'history', 'dates'));
     }
+
     public function show($id)
     {
         $user = Auth::user();
-
         $report = FinancialInsight::where('user_id', $user->id)->findOrFail($id);
 
-        $type = $report->type;
-        $date = $report->created_at->format('Y-m-d');
-        // Default tanggal ke tanggal pembuatan
-        $parts = explode('-', $report->period_key);
-        $year = $parts[0];
-        $suffix = $parts[1];
-        $expenseDates = [];
-        if ($type === 'weekly') {
-            // Logika untuk mengubah Minggu ke Tanggal Start/End agak kompleks, 
-            // tapi kita bisa gunakan Carbon setISODate
-            $dt = Carbon::now()->setISODate($year, $suffix);
-            $start = $dt->copy()->startOfWeek();
-            $end = $dt->copy()->endOfWeek();
-
-            $expenseDates = Expense::where('user_id', $user->id)
-                ->whereBetween('date', [$start, $end])
-                ->pluck('date')->unique()->values()->toArray();
-
-            $date = $start->format('Y-m-d'); // Set tanggal date picker ke awal minggu history
-        } else {
-            // Bulanan
-            $expenseDates = Expense::where('user_id', $user->id)
-                ->whereMonth('date', $suffix)
-                ->whereYear('date', $year)
-                ->pluck('date')->unique()->values()->toArray();
-
-            $date = "$year-$suffix-01"; // Set tanggal date picker ke awal bulan history
+        $date = $report->created_at->format('Y-m-d'); 
+        if ($report->type === 'weekly') {
+            $parts = explode('-', $report->period_key);
+            $date = Carbon::now()->setISODate($parts[0], substr($parts[1], 1))->startOfWeek()->format('Y-m-d');
+        } elseif ($report->type === 'monthly') {
+            $date = $report->period_key . '-01';
         }
+
+        $viewStart = Carbon::parse($date)->startOfMonth()->subMonth(); 
+        $viewEnd   = Carbon::parse($date)->endOfMonth()->addMonth();
+        
+        $dates = $this->getAllTransactionDates($user->id, $viewStart, $viewEnd);
+
         return view('reports.index', [
             'report' => $report,
-            'type' => $type,
+            'type' => $report->type,
             'date' => $date,
             'history' => FinancialInsight::where('user_id', $user->id)->where('id', '!=', $id)->latest()->limit(5)->get(),
-            'expenseDates' => $expenseDates,
-            'is_detail_view' => true // Flag penanda ini mode detail history
+            'dates' => $dates, 
+            'is_detail_view' => true 
         ]);
     }
-    public function generate(Request $request, GeminiAgentService $ai)
+
+    public function history()
+    {
+        $reports = FinancialInsight::where('user_id', Auth::id())
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+        return view('reports.history', compact('reports'));
+    }
+
+    public function generate(Request $request, FinancialAiService $ai)
     {
         $user = Auth::user();
         $type = $request->input('type');
         $date = $request->input('date');
-        $refDate = Carbon::parse($date);
 
-        // 1. SETUP QUERY AWAL
-        $expenseQuery = Expense::where('user_id', $user->id);
-        $incomeQuery = Income::where('user_id', $user->id);
-        $prevExpenseQuery = Expense::where('user_id', $user->id);
+        $period = $this->getPeriodMetadata($type, $date);
+        $metrics = $this->getFinancialMetrics($user, $period);
 
-        // Hapus perhitungan premature di sini (yang sebelumnya ada di baris 123-127)
+        $contextData = [
+            'period_name' => $period['name'],
+            'total_income' => $metrics['total_income'],
+            'total_expense' => $metrics['total_expense'],
+            'balance' => $metrics['balance'],
+            'trend_text' => $metrics['trend_text'],
+            'wasteful_dates' => $metrics['wasteful_dates'],
+            'user_job' => $user->job ?? 'Tidak disebutkan',
+            'user_city' => $user->address ?? 'Indonesia',
+            'income_sources' => $metrics['income_sources'],
+            'income_structure' => $metrics['income_structure'],
+        ];
 
-        // Data Profil User
-        $job = $user->job ?? 'Tidak disebutkan';
-        $city = $user->address ?? 'Indonesia';
+        $aiResult = $ai->analyzeReport($contextData, $request->input('ai_model'));
 
-        // 2. TERAPKAN FILTER TANGGAL (MINGGUAN/BULANAN)
-        if ($type === 'weekly') {
-            // MINGGUAN
-            $start = $refDate->copy()->startOfWeek();
-            $end = $refDate->copy()->endOfWeek();
-            $periodKey = $refDate->format('o-W');
-            $periodName = "Minggu ke-" . $refDate->weekOfYear . " " . $refDate->year;
-
-            // Filter Query Utama
-            $expenseQuery->whereBetween('date', [$start, $end]);
-            $incomeQuery->whereBetween('date_received', [$start, $end]); // Asumsi kolom date di Income bernama 'date'
-
-            // Filter Tren (Minggu Lalu)
-            $prevStart = $start->copy()->subWeek();
-            $prevEnd = $end->copy()->subWeek();
-            $prevExpenseQuery->whereBetween('date', [$prevStart, $prevEnd]);
-
-        } else {
-            // BULANAN
-            $periodKey = $refDate->format('Y-m');
-            $periodName = "Bulan " . $refDate->format('F Y');
-
-            // Filter Query Utama
-            $expenseQuery->whereMonth('date', $refDate->month)->whereYear('date', $refDate->year);
-            $incomeQuery->whereMonth('date_received', $refDate->month)->whereYear('date_received', $refDate->year);
-
-            // Filter Tren (Bulan Lalu)
-            $prevDate = $refDate->copy()->subMonth();
-            $prevExpenseQuery->whereMonth('date', $prevDate->month)->whereYear('date', $prevDate->year);
+        if (!$aiResult) {
+            return back()->with('error', 'Layanan AI sedang sibuk.');
         }
 
-        // 3. BARU HITUNG TOTALNYA DI SINI (SETELAH FILTER)
-        $dailyExpenses = $expenseQuery->selectRaw('date, SUM(amount) as total')->groupBy('date')->get();
+        FinancialInsight::updateOrCreate(
+            ['user_id' => $user->id, 'type' => $type, 'period_key' => $period['key']],
+            [
+                'status' => $this->validateStatus($aiResult['status'] ?? 'warning'),
+                'ai_analysis' => $aiResult['analysis'],
+                'ai_recommendation' => $aiResult['recommendation'],
+                'wasteful_dates' => $metrics['wasteful_dates'],
+                'total_expense' => $metrics['total_expense'],
+                'total_income' => $metrics['total_income'],
+                'balance' => $metrics['balance'],
+                'percentage_change' => $metrics['trend_percent']
+            ]
+        );
 
-        $totalExpense = $dailyExpenses->sum('total'); // Ini sekarang SUDAH BENAR (Periode ini saja)
-        $totalIncome = $incomeQuery->sum('amount');   // Ini sekarang SUDAH BENAR (Periode ini saja)
-        $totalLastExpense = $prevExpenseQuery->sum('amount');
+        return redirect()->route('reports.index', ['type' => $type, 'date' => $date])
+            ->with('success', 'Analisis AI berhasil diselesaikan!');
+    }
 
+    // --- HELPER METHODS ---
+
+    /**
+     * Mengambil Tanggal Unik untuk Expense, Income, dan Activity
+     */
+    private function getAllTransactionDates($userId, $start, $end)
+    {
+        // Format tanggal dipaksa ke Y-m-d untuk mencocokkan dengan JS
+        return [
+            'expenses' => Expense::where('user_id', $userId)
+                ->whereBetween('date', [$start, $end])
+                ->pluck('date')
+                ->map(fn($d) => substr($d, 0, 10)) // Ambil Y-m-d saja
+                ->unique()->values()->toArray(),
+
+            'incomes' => Income::where('user_id', $userId)
+                ->whereBetween('date_received', [$start, $end])
+                ->pluck('date_received')
+                ->map(fn($d) => substr($d, 0, 10))
+                ->unique()->values()->toArray(),
+
+            'activities' => Activity::where('user_id', $userId)
+                ->whereBetween('date_start', [$start, $end])
+                ->pluck('date_start')
+                ->map(fn($d) => substr($d, 0, 10))
+                ->unique()->values()->toArray(),
+        ];
+    }
+
+    private function getPeriodMetadata($type, $dateInput)
+    {
+        $refDate = Carbon::parse($dateInput);
+
+        if ($type === 'weekly') {
+            return [
+                'start' => $refDate->copy()->subDays(6)->startOfDay(),
+                'end' => $refDate->copy()->endOfDay(),
+                'key' => $refDate->format('o-W'),
+                'name' => "7 Hari Terakhir (" . $refDate->copy()->subDays(6)->format('d M') . " - " . $refDate->format('d M Y') . ")",
+                'prev_start' => $refDate->copy()->subDays(13)->startOfDay(),
+                'prev_end' => $refDate->copy()->subDays(7)->endOfDay(),
+            ];
+        }
+
+        return [
+            'start' => $refDate->copy()->startOfMonth(),
+            'end' => $refDate->copy()->endOfMonth(),
+            'key' => $refDate->format('Y-m'),
+            'name' => "Bulan " . $refDate->translatedFormat('F Y'),
+            'prev_start' => $refDate->copy()->subMonth()->startOfMonth(),
+            'prev_end' => $refDate->copy()->subMonth()->endOfMonth(),
+        ];
+    }
+
+    private function getFinancialMetrics($user, $period)
+    {
+        $expenses = Expense::where('user_id', $user->id)->whereBetween('date', [$period['start'], $period['end']])->get();
+        $incomes = Income::where('user_id', $user->id)->whereBetween('date_received', [$period['start'], $period['end']])->get();
+        $prevExpenseTotal = Expense::where('user_id', $user->id)->whereBetween('date', [$period['prev_start'], $period['prev_end']])->sum('amount');
+
+        $totalExpense = $expenses->sum('amount');
+        $totalIncome = $incomes->sum('amount');
         $balance = $totalIncome - $totalExpense;
 
-        // Ambil Sumber Pemasukan
-        $incomeSources = $incomeQuery->pluck('source') // Sesuaikan nama kolom (source/category)
-            ->unique()
-            ->implode(', ');
-
-        if (empty($incomeSources))
-            $incomeSources = "Tidak terdeteksi";
-
-        // Hitung Tren
         $trendPercent = 0;
-        if ($totalLastExpense > 0) {
-            $trendPercent = (($totalExpense - $totalLastExpense) / $totalLastExpense) * 100;
+        if ($prevExpenseTotal > 0) {
+            $trendPercent = (($totalExpense - $prevExpenseTotal) / $prevExpenseTotal) * 100;
         } elseif ($totalExpense > 0) {
             $trendPercent = 100;
         }
         $trendText = ($trendPercent > 0 ? "NAIK " : "TURUN ") . number_format(abs($trendPercent), 1) . "%";
 
-        // Deteksi Boros (Spike)
-        $avgDaily = $dailyExpenses->count() > 0 ? $dailyExpenses->avg('total') : 0;
-        $wastefulDates = [];
-        foreach ($dailyExpenses as $day) {
-            if ($day->total > ($avgDaily * 1.5)) {
-                $wastefulDates[] = $day->date;
+        // Income Structure Logic
+        $fixedIncome = $incomes->where('is_regular', true)->sum('amount');
+        $variableIncome = $incomes->where('is_regular', false)->sum('amount');
+        
+        $incomeStructure = "Tidak ada pemasukan.";
+        if ($totalIncome > 0) {
+            if ($fixedIncome > 0 && $variableIncome == 0) $incomeStructure = "100% Stabil (Gaji Tetap).";
+            elseif ($fixedIncome == 0 && $variableIncome > 0) $incomeStructure = "100% Fluktuatif (Freelance).";
+            else {
+                $pct = round(($fixedIncome/$totalIncome)*100);
+                $incomeStructure = "HYBRID: {$pct}% Tetap + " . (100-$pct) . "% Variabel.";
             }
         }
 
-        // Tentukan Status (Logic Baru)
+        // Wasteful Logic
+        $daily = $expenses->groupBy('date')->map(fn($r) => $r->sum('amount'));
+        $avg = $daily->count() > 0 ? $daily->avg() : 0;
+        $wastefulDates = [];
+        foreach ($daily as $dt => $amt) {
+            if ($amt > ($avg * 1.5)) $wastefulDates[] = $dt;
+        }
 
-
-        // 4. KIRIM KE AI
-        $contextData = [
-            'period_name' => $periodName,
+        return [
             'total_income' => $totalIncome,
             'total_expense' => $totalExpense,
             'balance' => $balance,
+            'trend_percent' => $trendPercent,
             'trend_text' => $trendText,
             'wasteful_dates' => $wastefulDates,
-            'user_job' => $job,
-            'user_city' => $city,
-            'income_sources' => $incomeSources
+            'income_sources' => $incomes->pluck('source')->unique()->implode(', ') ?: 'Tidak terdeteksi',
+            'income_structure' => $incomeStructure,
         ];
+    }
 
-        $aiResult = $ai->analyzeForReport($contextData);
-
-        if (!$aiResult)
-            return back()->with('error', 'AI Sedang Sibuk');
-        // Kita ambil status dari AI, jika AI error/lupa kasih status, default ke 'warning'
-        $aiStatus = $aiResult['status'] ?? 'warning';
-
-        // Validasi agar hanya menerima: safe, warning, danger (untuk mencegah error tampilan)
-        if (!in_array($aiStatus, ['safe', 'warning', 'danger'])) {
-            $aiStatus = 'warning';
-        }
-        // 5. SIMPAN HASIL
-        // 5. SIMPAN HASIL
-        FinancialInsight::updateOrCreate(
-            ['user_id' => $user->id, 'type' => $type, 'period_key' => $periodKey],
-            [
-                'status' => $aiStatus,
-                'ai_analysis' => $aiResult['analysis'],
-                'ai_recommendation' => $aiResult['recommendation'],
-                'wasteful_dates' => $wastefulDates,
-                
-                // DATA KEUANGAN LENGKAP
-                'total_expense' => $totalExpense,
-                'total_income'  => $totalIncome, // <--- Simpan Pemasukan
-                'balance'       => $balance,     // <--- Simpan Sisa Uang
-                
-                'percentage_change' => $trendPercent
-            ]
-        );
-
-        return redirect()->route('reports.index', ['type' => $type, 'date' => $date])
-            ->with('success', 'Analisis berhasil dibuat!');
+    private function validateStatus($status)
+    {
+        return in_array(strtolower($status), ['safe', 'warning', 'danger']) ? strtolower($status) : 'warning';
     }
 }

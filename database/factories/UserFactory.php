@@ -32,6 +32,7 @@ class UserFactory extends Factory
             'job' => $this->faker->jobTitle(),
             'job_location' => $this->faker->city(),
             'remember_token' => Str::random(10),
+            'balance' => 0,
         ];
     }
 

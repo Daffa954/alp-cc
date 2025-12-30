@@ -5,31 +5,40 @@ namespace App\Http\Controllers;
 use App\Models\Income;
 use App\Models\Expense;
 use App\Models\Activity;
-use Illuminate\Http\Request;
+use Illuminate\Http\Request; // Pastikan Request di-import
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
-    public function index()
+    // Tambahkan parameter Request $request
+    public function index(Request $request) 
     {
         $user = Auth::user();
-        $now = Carbon::now();
+        
+        // 1. TANGKAP TANGGAL DARI URL (Agar bisa ganti bulan)
+        // Jika tidak ada di URL, default ke bulan sekarang
+        $reqMonth = $request->query('month', Carbon::now()->month);
+        $reqYear = $request->query('year', Carbon::now()->year);
+        
+        // Buat object Carbon sebagai 'Konteks Waktu' (Tgl 1 bulan terpilih)
+        $dateContext = Carbon::createFromDate($reqYear, $reqMonth, 1);
 
-        // --- 1. STATISTIK BULAN INI ---
+        // --- 1. STATISTIK BULANAN (Gunakan $dateContext, BUKAN $now) ---
         $totalExpense = Expense::where('user_id', $user->id)
-            ->whereMonth('date', $now->month)
-            ->whereYear('date', $now->year)
+            ->whereMonth('date', $dateContext->month)
+            ->whereYear('date', $dateContext->year)
             ->sum('amount');
 
         $totalIncome = Income::where('user_id', $user->id)
-            ->whereMonth('date_received', $now->month)
-            ->whereYear('date_received', $now->year)
+            ->whereMonth('date_received', $dateContext->month)
+            ->whereYear('date_received', $dateContext->year)
             ->sum('amount');
 
-        // --- 2. STATISTIK MINGGUAN (Rata-rata Harian) ---
-        $startOfWeek = $now->copy()->startOfWeek();
-        $endOfWeek = $now->copy()->endOfWeek();
+        // --- 2. STATISTIK MINGGUAN (Relatif terhadap bulan yang dipilih) ---
+        // Kita ambil minggu pertama dari bulan yang dipilih agar relevan
+        $startOfWeek = $dateContext->copy()->startOfWeek();
+        $endOfWeek = $dateContext->copy()->endOfWeek();
 
         $weeklyExpense = Expense::where('user_id', $user->id)
             ->whereBetween('date', [$startOfWeek, $endOfWeek])
@@ -37,94 +46,84 @@ class DashboardController extends Controller
 
         $weeklyAverage = $weeklyExpense / 7;
 
-        // --- 3. DATA UNTUK KALENDER (Harian) ---
+        // --- 3. DATA UNTUK KALENDER ---
         $calendarData = [];
 
-        // Ambil Pengeluaran Bulanan & Hitung Total per Tanggal
+        // Ambil Data Expense Sesuai Bulan Terpilih
         $monthlyExpenses = Expense::where('user_id', $user->id)
-            ->whereMonth('date', $now->month)
-            ->whereYear('date', $now->year)
+            ->whereMonth('date', $dateContext->month)
+            ->whereYear('date', $dateContext->year)
             ->get();
 
         foreach ($monthlyExpenses as $exp) {
-            $date = Carbon::parse($exp->date)->format('Y-m-d');
+            $dateKey = Carbon::parse($exp->date)->format('Y-m-d');
             
-            if (!isset($calendarData[$date])) {
-                $calendarData[$date] = [
-                    'total_expense' => 0, 
-                    'total_income' => 0, 
-                    'expenses' => [], 
-                    'activities' => []
+            if (!isset($calendarData[$dateKey])) {
+                $calendarData[$dateKey] = [
+                    'total_expense' => 0, 'total_income' => 0, 'expenses' => [], 'activities' => []
                 ];
             }
-
-            $calendarData[$date]['expenses'][] = [
+            $calendarData[$dateKey]['expenses'][] = [
                 'amount' => number_format($exp->amount, 0, ',', '.'),
                 'category' => $exp->category,
                 'desc' => $exp->description
             ];
-            $calendarData[$date]['total_expense'] += $exp->amount;
+            $calendarData[$dateKey]['total_expense'] += $exp->amount;
         }
 
-        // Ambil Pemasukan Bulanan & Hitung Total per Tanggal
+        // Ambil Data Income Sesuai Bulan Terpilih
         $monthlyIncomes = Income::where('user_id', $user->id)
-            ->whereMonth('date_received', $now->month)
-            ->whereYear('date_received', $now->year)
+            ->whereMonth('date_received', $dateContext->month)
+            ->whereYear('date_received', $dateContext->year)
             ->get();
 
         foreach ($monthlyIncomes as $inc) {
-            $date = Carbon::parse($inc->date_received)->format('Y-m-d');
-
-            if (!isset($calendarData[$date])) {
-                $calendarData[$date] = [
-                    'total_expense' => 0, 
-                    'total_income' => 0, 
-                    'expenses' => [], 
-                    'activities' => []
+            $dateKey = Carbon::parse($inc->date_received)->format('Y-m-d');
+            if (!isset($calendarData[$dateKey])) {
+                $calendarData[$dateKey] = [
+                    'total_expense' => 0, 'total_income' => 0, 'expenses' => [], 'activities' => []
                 ];
             }
-
-            $calendarData[$date]['total_income'] += $inc->amount;
+            $calendarData[$dateKey]['total_income'] += $inc->amount;
         }
 
-        // Ambil Aktivitas Bulanan
+        // Ambil Data Activity Sesuai Bulan Terpilih
         $monthlyActivities = Activity::where('user_id', $user->id)
-            ->whereMonth('date_start', $now->month)
-            ->whereYear('date_start', $now->year)
+            ->whereMonth('date_start', $dateContext->month)
+            ->whereYear('date_start', $dateContext->year)
             ->get();
 
         foreach ($monthlyActivities as $act) {
-            $date = Carbon::parse($act->date_start)->format('Y-m-d');
-            
-            if (!isset($calendarData[$date])) {
-                $calendarData[$date] = [
-                    'total_expense' => 0, 
-                    'total_income' => 0, 
-                    'expenses' => [], 
-                    'activities' => []
+            $dateKey = Carbon::parse($act->date_start)->format('Y-m-d');
+            if (!isset($calendarData[$dateKey])) {
+                $calendarData[$dateKey] = [
+                    'total_expense' => 0, 'total_income' => 0, 'expenses' => [], 'activities' => []
                 ];
             }
-            $calendarData[$date]['activities'][] = [
-                'title' => $act->title,
-            ];
+            $calendarData[$dateKey]['activities'][] = ['title' => $act->title];
         }
 
-        // --- 4. DATA GRAFIK (Expense Trend 30 Hari Terakhir) ---
+        // --- 4. DATA GRAFIK (Expense Trend Bulan Terpilih) ---
+        // Ubah logika: Tampilkan grafik dari Tanggal 1 s/d Akhir Bulan Terpilih
+        $startDate = $dateContext->copy()->startOfMonth();
+        $endDate = $dateContext->copy()->endOfMonth();
+
         $chartData = Expense::where('user_id', $user->id)
-            ->where('date', '>=', $now->copy()->subDays(30))
+            ->whereBetween('date', [$startDate, $endDate])
             ->selectRaw('DATE(date) as date, SUM(amount) as total')
             ->groupBy('date')
-            ->orderBy('date')
             ->get();
 
         $labels = [];
         $data = [];
-
-        for ($i = 29; $i >= 0; $i--) {
-            $currentDate = $now->copy()->subDays($i);
-            $dateKey = $currentDate->format('Y-m-d');
-            $labels[] = $currentDate->format('d M');
-
+        
+        // Loop setiap hari dalam bulan tersebut
+        $daysInMonth = $dateContext->daysInMonth;
+        for ($i = 1; $i <= $daysInMonth; $i++) {
+            $currentDay = $dateContext->copy()->day($i);
+            $dateKey = $currentDay->format('Y-m-d');
+            
+            $labels[] = $currentDay->format('d'); // Label tanggal saja (1, 2, 3...)
             $dayData = $chartData->firstWhere('date', $dateKey);
             $data[] = $dayData ? $dayData->total : 0;
         }
@@ -136,7 +135,7 @@ class DashboardController extends Controller
 
         // --- 5. BREAKDOWN KATEGORI ---
         $categoryBreakdown = Expense::where('user_id', $user->id)
-            ->whereMonth('date', $now->month)
+            ->whereMonth('date', $dateContext->month) // Gunakan Context
             ->selectRaw('category, SUM(amount) as total, COUNT(*) as count')
             ->groupBy('category')
             ->orderByDesc('total')
@@ -152,38 +151,27 @@ class DashboardController extends Controller
                 ];
             });
 
-        // --- 6. AKTIVITAS TERBARU ---
+        // --- 6. Lain-lain ---
         $recentActivities = Activity::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->take(5)
             ->get();
 
-        // --- 7. REKOMENDASI PINTAR ---
         $recommendations = [];
         $budgetLimit = $totalIncome * 0.8;
-        
         if ($totalIncome > 0 && $totalExpense > $budgetLimit) {
-            $recommendations[] = (object) [
-                'message' => 'Waspada! Pengeluaran Anda sudah melebihi 80% dari pemasukan. Coba batasi pengeluaran tersier.',
-                'week_start' => $now->startOfWeek()->format('Y-m-d')
-            ];
+            $recommendations[] = (object) ['message' => 'Waspada! Pengeluaran bulan ini sudah >80% pemasukan.'];
         } else {
-            $recommendations[] = (object) [
-                'message' => 'Keuangan Anda bulan ini terlihat sehat. Pertahankan kebiasaan mencatat transaksi!',
-                'week_start' => $now->startOfWeek()->format('Y-m-d')
-            ];
+            $recommendations[] = (object) ['message' => 'Keuangan bulan ini terlihat sehat.'];
         }
 
-        // --- RETURN VIEW ---
+        $balance = $user->balance;
+
+        // Jangan lupa kirim $dateContext ke view
         return view('dashboard', compact(
-            'totalExpense',
-            'totalIncome',
-            'weeklyAverage',
-            'expenseTrend',
-            'categoryBreakdown',
-            'recentActivities',
-            'calendarData',
-            'recommendations'
+            'totalExpense', 'totalIncome', 'weeklyAverage', 'expenseTrend',
+            'categoryBreakdown', 'recentActivities', 'calendarData',
+            'recommendations', 'balance', 'dateContext'
         ));
     }
 }

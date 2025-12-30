@@ -38,6 +38,7 @@ class IncomeController extends Controller
             'amount' => 'required|numeric|min:0',
             'date_received' => 'required|date',
             'notes' => 'nullable|string',
+            'is_regular' => 'nullable|boolean'
         ]);
 
         // 3. Simpan
@@ -47,6 +48,7 @@ class IncomeController extends Controller
             'amount' => $request->amount,
             'date_received' => $request->date_received,
             'notes' => $request->notes,
+            'is_regular' => $request->has('is_regular'),
         ]);
 
         return redirect()->route('incomes.index')->with('success', 'Pemasukan berhasil dicatat!');

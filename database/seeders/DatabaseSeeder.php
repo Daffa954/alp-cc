@@ -17,23 +17,29 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      */
+    // public function run(): void
+    // {
+    //     // User::factory(10)->create();
+
+    //     User::factory()->create([
+    //         'name' => 'Test User',
+    //         'email' => 'test@example.com',
+    //     ]);
+    //     User::factory()
+    //         ->count(10)
+    //         ->has(Activity::factory()->count(3))
+    //         ->has(Income::factory()->count(2))
+    //         ->has(Expense::factory()->count(5))
+    //         ->create();
+
+    //     // or create some direct factories connecting entities
+    //     Activity::factory()->count(20)->create();
+    //     Expense::factory()->count(50)->create();
+    // }
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $this->call([
+            FinancialSeeder::class,
         ]);
-        User::factory()
-            ->count(10)
-            ->has(Activity::factory()->count(3))
-            ->has(Income::factory()->count(2))
-            ->has(Expense::factory()->count(5))
-            ->create();
-
-        // or create some direct factories connecting entities
-        Activity::factory()->count(20)->create();
-        Expense::factory()->count(50)->create();
     }
 }

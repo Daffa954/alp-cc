@@ -8,6 +8,7 @@ use App\Http\Controllers\IncomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Http; // Pastikan import ini ada untuk debug route di bawah
 
 Route::get('/', function () {
     return view('welcome');
@@ -28,25 +29,32 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('expenses', ExpenseController::class);
     Route::resource('activities', ActivityController::class);
     Route::resource('incomes', IncomeController::class);
-    // Halaman Report Utama
-    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
-    // Action Generate AI (POST)
+
+    // --- PERBAIKAN URUTAN ROUTE REPORTS ---
+    
+    // 1. Route Khusus/Static WAJIB DI ATAS Route Resource
+    Route::get('/reports/history', [ReportController::class, 'history'])->name('reports.history');
     Route::post('/reports/generate', [ReportController::class, 'generate'])->name('reports.generate');
-Route::get('/reports/{id}', [ReportController::class, 'show'])->name('reports.show');
+
+    // 2. Route Resource (Menangani /reports/{id}) WAJIB DI BAWAH
+    // Ini menangani index, store, dan show secara otomatis
+    Route::resource('reports', ReportController::class)->only(['index', 'store', 'show']);
+
+    // (Baris di bawah ini SAYA HAPUS karena sudah ditangani otomatis oleh 'resource' -> 'show')
+    // Route::get('/reports/{id}', [ReportController::class, 'show'])->name('reports.show');
+
     // --- FITUR 2: CHATBOT ADVISOR ---
-    // Halaman Chat
     Route::get('/advisor', function () {
         return view('advisor.index');
     })->name('advisor.index');
-    // API Endpoint untuk kirim pesan ke AI
+    
     Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
 });
+
 Route::get('/debug-gemini-models', function () {
     $apiKey = trim(env('GEMINI_API_KEY'));
-    
-    // Request ke endpoint 'models' (GET) untuk melihat daftar yang tersedia
     $response = Http::get("https://generativelanguage.googleapis.com/v1beta/models?key={$apiKey}");
-    
     return $response->json();
 });
+
 require __DIR__ . '/auth.php';

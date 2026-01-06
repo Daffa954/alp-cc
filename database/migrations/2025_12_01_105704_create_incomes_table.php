@@ -17,7 +17,9 @@ return new class extends Migration
             $table->string('source')->nullable();
             $table->decimal('amount', 12, 2);
             $table->date('date_received')->nullable();
+            $table->boolean('is_regular')->default(false);
             $table->text('notes')->nullable();
+
             $table->timestamps();
         });
 

@@ -23,6 +23,7 @@ class IncomeFactory extends Factory
         'amount' => $this->faker->randomFloat(2, 100, 5000),
         'date_received' => $this->faker->date(),
         'notes' => $this->faker->sentence(),
+        'is_regular' => $this->faker->boolean()
     ];
     }
 }

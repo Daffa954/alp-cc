@@ -19,7 +19,7 @@ class ExpenseController extends Controller
         $expenses = Expense::where('user_id', $user->id)
             ->with('activity')
             ->orderBy('created_at', 'desc')
-            ->paginate(15);
+            ->paginate(7);
         
         // Get summary data
         $totalExpense = Expense::where('user_id', $user->id)

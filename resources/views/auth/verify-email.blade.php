@@ -7,7 +7,7 @@
     <!-- Logo/Header -->
     <div class="text-center mb-8">
         <div class="flex justify-center mb-4">
-            <div class="gradient-bg w-16 h-16 rounded-2xl flex items-center justify-center">
+            <div class="bg-[#ff6b00] w-16 h-16 rounded-2xl flex items-center justify-center">
                 <i class="fas fa-envelope-circle-check text-white text-2xl"></i>
             </div>
         </div>
@@ -16,10 +16,10 @@
     </div>
 
     <!-- Message -->
-    <div class="mb-6 p-4 bg-blue-50 border-l-4 border-blue-500 rounded">
+    <div class="mb-6 p-4 bg-blue-50 border-l-4 border-[#ff6b00] rounded">
         <div class="flex">
             <div class="flex-shrink-0">
-                <i class="fas fa-info-circle text-blue-500 mt-1"></i>
+                <i class="fas fa-info-circle text-[#ff6b00] mt-1"></i>
             </div>
             <div class="ml-3">
                 <p class="text-sm text-slate-700">
@@ -50,7 +50,7 @@
         <form method="POST" action="{{ route('verification.send') }}">
             @csrf
             <button type="submit" 
-                class="w-full flex items-center justify-center px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:shadow-lg transition duration-200">
+                class="w-full flex items-center justify-center px-4 py-3 bg-gradient-to-r bg-[#ff720c] hover:bg-[#fb6602] text-white font-semibold rounded-xl hover:shadow-lg transition duration-200">
                 <i class="fas fa-paper-plane mr-2"></i>
                 {{ __('Resend Verification Email') }}
             </button>
@@ -70,7 +70,7 @@
         <form method="POST" action="{{ route('logout') }}">
             @csrf
             <button type="submit" 
-                class="w-full flex items-center justify-center px-4 py-3 border border-slate-200 text-slate-700 font-medium rounded-xl hover:bg-slate-50 hover:border-slate-300 transition duration-200">
+                class="w-full flex items-center justify-center px-4 py-3 border border-slate-800 bg-slate-800 text-white font-medium rounded-xl hover:bg-slate-900 hover:border-slate-300 transition duration-200">
                 <i class="fas fa-sign-out-alt mr-2"></i>
                 {{ __('Log Out') }}
             </button>
@@ -80,7 +80,7 @@
         <div class="pt-4 border-t border-slate-200">
             <p class="text-center text-sm text-slate-600">
                 Already verified?
-                <a href="{{ route('login') }}" class="font-semibold text-blue-600 hover:text-blue-500 transition">
+                <a href="{{ route('login') }}" class="font-semibold text-[#ff911b] hover:text-[#fb6602] transition">
                     Sign in here
                 </a>
             </p>
@@ -92,22 +92,22 @@
 <div class="mt-8">
     <div class="flex items-center justify-center">
         <div class="flex items-center">
-            <div class="w-8 h-8 rounded-full border-2 border-blue-200 flex items-center justify-center">
-                <i class="fas fa-check text-blue-300 text-xs"></i>
+            <div class="w-8 h-8 rounded-full border-2 border-[#f9b17e] flex items-center justify-center">
+                <i class="fas fa-check text-[#ff9b53] text-xs"></i>
             </div>
-            <div class="w-16 h-1 bg-blue-200 mx-2"></div>
-            <div class="gradient-bg w-8 h-8 rounded-full flex items-center justify-center">
+            <div class="w-16 h-1 bg-[#f9b17e] mx-2"></div>
+            <div class="bg-[#ff6b00] w-8 h-8 rounded-full flex items-center justify-center">
                 <i class="fas fa-envelope text-white text-xs"></i>
             </div>
-            <div class="w-16 h-1 bg-blue-200 mx-2"></div>
-            <div class="w-8 h-8 rounded-full border-2 border-blue-200 flex items-center justify-center">
-                <span class="text-xs text-blue-300">3</span>
+            <div class="w-16 h-1 bg-[#f9b17e] mx-2"></div>
+            <div class="w-8 h-8 rounded-full border-2 border-[#f9b17e] flex items-center justify-center">
+                <span class="text-xs text-[#ff9b53]">3</span>
             </div>
         </div>
     </div>
     <div class="flex justify-between mt-2 text-xs text-slate-500 px-4">
-        <span class="text-blue-600 font-medium">Registration</span>
-        <span class="text-blue-600 font-medium">Verification</span>
+        <span class="text-[#ff6b00] font-medium">Registration</span>
+        <span class="text-[#ff6b00] font-medium">Verification</span>
         <span>Dashboard</span>
     </div>
 </div>
@@ -115,8 +115,8 @@
 <!-- Email Animation -->
 <div class="mt-6 text-center">
     <div class="inline-block relative">
-        <i class="fas fa-envelope text-4xl text-blue-400 animate-pulse"></i>
-        <i class="fas fa-paper-plane text-xl text-blue-600 absolute -top-2 -right-2 animate-bounce"></i>
+        <i class="fas fa-envelope text-4xl text-[#f8a163] animate-pulse"></i>
+        <i class="fas fa-paper-plane text-xl text-[#ff6b00] absolute -top-2 -right-2 animate-bounce"></i>
     </div>
 </div>
 @endsection

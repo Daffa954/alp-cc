@@ -27,7 +27,7 @@
         <!-- Name -->
         <div class="mb-6">
             <label for="name" class="block text-sm font-medium text-slate-700 mb-2">
-                <i class="fas fa-user mr-2 text-blue-500"></i>Nama Lengkap
+                <i class="fas fa-user mr-2 text-[#ff6b00]"></i>Nama Lengkap
             </label>
             <input
                 type="text"
@@ -44,7 +44,7 @@
         <!-- Email -->
         <div class="mb-6">
             <label for="email" class="block text-sm font-medium text-slate-700 mb-2">
-                <i class="fas fa-envelope mr-2 text-blue-500"></i>Alamat Email
+                <i class="fas fa-envelope mr-2 text-[#ff6b00]"></i>Alamat Email
             </label>
             <input
                 type="email"
@@ -60,7 +60,7 @@
         <!-- Password -->
         <div class="mb-6">
             <label for="password" class="block text-sm font-medium text-slate-700 mb-2">
-                <i class="fas fa-lock mr-2 text-blue-500"></i>Password
+                <i class="fas fa-lock mr-2 text-[#ff6b00]"></i>Password
             </label>
             <div class="relative">
                 <input
@@ -84,7 +84,7 @@
         <!-- Confirm Password -->
         <div class="mb-6">
             <label for="password_confirmation" class="block text-sm font-medium text-slate-700 mb-2">
-                <i class="fas fa-lock mr-2 text-blue-500"></i>Konfirmasi Password
+                <i class="fas fa-lock mr-2 text-[#ff6b00]"></i>Konfirmasi Password
             </label>
             <div class="relative">
                 <input
@@ -104,7 +104,7 @@
         <!-- Optional Fields -->
         <div class="mb-6">
             <h3 class="text-sm font-medium text-slate-700 mb-3">
-                <i class="fas fa-info-circle mr-2 text-blue-500"></i>Informasi Tambahan (Opsional)
+                <i class="fas fa-info-circle mr-2 text-[#ff6b00]"></i>Informasi Tambahan (Opsional)
             </h3>
             
             <!-- Address -->
@@ -160,7 +160,7 @@
         </div> --}}
 
         <!-- Submit Button -->
-        <button type="submit" class="w-full btn-primary text-white font-semibold py-3 px-4 rounded-xl mb-6">
+        <button type="submit" class="w-full bg-[#ff720c] hover:bg-[#fb6602] text-white font-semibold py-3 px-4 rounded-xl mb-6">
             Buat Akun <i class="fas fa-user-plus ml-2"></i>
         </button>
 
@@ -180,7 +180,7 @@
         <div class="text-center">
             <p class="text-sm text-slate-600">
                 Sudah punya akun?
-                <a href="{{ route('login') }}" class="font-semibold text-blue-600 hover:text-blue-500 transition">
+                <a href="{{ route('login') }}" class="font-semibold text-[#ff911b] hover:text-[#fb6602] transition">
                     Masuk di sini
                 </a>
             </p>
@@ -192,16 +192,16 @@
 <div class="mt-8">
     <div class="flex items-center justify-center">
         <div class="flex items-center">
-            <div class="gradient-bg w-8 h-8 rounded-full flex items-center justify-center">
+            <div class="bg-[#ff6b00] w-8 h-8 rounded-full flex items-center justify-center">
                 <i class="fas fa-user text-white text-xs"></i>
             </div>
-            <div class="w-16 h-1 bg-blue-200 mx-2"></div>
-            <div class="w-8 h-8 rounded-full border-2 border-blue-200 flex items-center justify-center">
-                <span class="text-xs text-blue-300">2</span>
+            <div class="w-16 h-1 bg-[#f9b17e] mx-2"></div>
+            <div class="w-8 h-8 rounded-full border-2 border-[#f9b17e] flex items-center justify-center">
+                <span class="text-xs text-[#ff9b53]">2</span>
             </div>
-            <div class="w-16 h-1 bg-blue-200 mx-2"></div>
-            <div class="w-8 h-8 rounded-full border-2 border-blue-200 flex items-center justify-center">
-                <span class="text-xs text-blue-300">3</span>
+            <div class="w-16 h-1 bg-[#f9b17e] mx-2"></div>
+            <div class="w-8 h-8 rounded-full border-2 border-[#f9b17e] flex items-center justify-center">
+                <span class="text-xs text-[#ff9b53]">3</span>
             </div>
         </div>
     </div>

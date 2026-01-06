@@ -309,11 +309,16 @@
         <div class="sidebar w-64 bg-gray-800 border-r border-gray-700 hidden md:block">
             <div class="p-6">
                 <!-- Logo -->
-                <div class="flex items-center space-x-3 mb-8">
-                    <div class="gradient-bg w-10 h-10 rounded-xl flex items-center justify-center">
-                        <i class="fas fa-chart-line text-white text-lg"></i>
-                    </div>
-                    <span class="text-xl font-bold text-white">FinanceHub</span>
+                <div class="flex items-center ml-2 mb-8">
+                        <img class="header-logo-img w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 object-contain flex-shrink-0 mr-2"
+                    src="{{ asset('img/financeHubLogo.png') }}" alt="Logo FinanceHub">
+                    <span class="brand-text-white text-white text-xl sm:text-base md:text-2xl font-bold flex-shrink-0">
+                        Finance
+                    </span>
+                    <span
+                        class="brand-text-orange text-[#ff6b00] text-sm sm:text-base md:text-2xl font-bold flex-shrink-0 ml-1">
+                        Hub
+                    </span>
                 </div>
 
                 <!-- User Profile -->

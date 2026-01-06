@@ -269,7 +269,7 @@
                                         <div class="flex items-center space-x-4">
                                             <span class="text-white font-bold text-lg">Rp {{ number_format($expense->amount, 0, ',', '.') }}</span>
                                             <div class="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <a href="{{ route('expenses.edit', $expense->id) }}" class="p-2 text-gray-400 hover:text-blue-400"><i class="fas fa-pen text-sm"></i></a>
+                                                <a href="{{ route('expenses.edit', $expense) }}" class="p-2 text-gray-400 hover:text-blue-400"><i class="fas fa-pen text-sm"></i></a>
                                                 <form action="{{ route('expenses.destroy', $expense->id) }}" method="POST">
                                                     @csrf @method('DELETE')
                                                     <button type="submit" class="p-2 text-gray-400 hover:text-red-400"><i class="fas fa-trash text-sm"></i></button>

@@ -16,6 +16,7 @@ class Income extends Model
         'amount',
         'date_received',
         'notes',
+        'is_regular',
     ];
 
     protected $casts = [

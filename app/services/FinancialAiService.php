@@ -41,18 +41,17 @@ class FinancialAiService
         return $this->callGemini($data);
     }
 
-    // =========================================================================
-    // 2. DRIVER: GOOGLE GEMINI
-    // =========================================================================
+
     private function callGemini($data)
     {
         $apiKey = env('GEMINI_API_KEY');
-        // Menggunakan model Experimental (lebih hemat kuota free tier dibanding versi stable)
         $url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent';
 
         $prompt = $this->buildPrompt($data);
 
-        $response = Http::withHeaders(['Content-Type' => 'application/json'])
+        // PERBAIKAN: Tambahkan timeout(60) agar tidak error jika Gemini lambat
+        $response = Http::timeout(60)
+            ->withHeaders(['Content-Type' => 'application/json'])
             ->post("{$url}?key={$apiKey}", [
                 'contents' => [['parts' => [['text' => $prompt]]]]
             ]);
@@ -75,30 +74,32 @@ class FinancialAiService
 
         $prompt = $this->buildPrompt($data);
 
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $apiKey,
-            'HTTP-Referer' => config('app.url'), // Wajib untuk OpenRouter
-            'X-Title' => config('app.name'),     // Wajib untuk OpenRouter
-            'Content-Type' => 'application/json',
-        ])->post($url, [
-                    'model' => 'deepseek/deepseek-r1-0528:free', // ID Model DeepSeek V3 di OpenRouter
+        // PERBAIKAN: Tambahkan timeout(120) (2 menit)
+        // DeepSeek R1 butuh waktu lama untuk "thinking process"
+        $response = Http::timeout(120)
+            ->withHeaders([
+                'Authorization' => 'Bearer ' . $apiKey,
+                'HTTP-Referer' => config('app.url'),
+                'X-Title' => config('app.name'),
+                'Content-Type' => 'application/json',
+            ])->post($url, [
+                    'model' => 'deepseek/deepseek-r1-0528:free', // Versi Free sering antri/lambat
                     'messages' => [
                         ['role' => 'system', 'content' => 'You are a helpful financial assistant. Return ONLY valid JSON.'],
                         ['role' => 'user', 'content' => $prompt]
                     ],
                     'temperature' => 0.7,
-                    'response_format' => ['type' => 'json_object'] // Force JSON mode
+                    'response_format' => ['type' => 'json_object']
                 ]);
 
         if ($response->failed()) {
             Log::error("DeepSeek/OpenRouter Error: " . $response->body());
-            return null; // Return null jika kedua AI gagal
+            return null;
         }
 
         $rawText = $response->json()['choices'][0]['message']['content'] ?? '';
         return $this->parseJson($rawText);
     }
-
     // =========================================================================
     // 4. HELPER: PROMPT BUILDER (Agar Konsisten)
     // =========================================================================
@@ -106,7 +107,7 @@ class FinancialAiService
     {
         // Default text jika data kosong
         $incomeType = $data['income_type'] ?? 'Tidak Diketahui';
-        
+
         return "Bertindaklah sebagai penasihat keuangan pribadi yang bijak.
     
         PROFIL PENGGUNA:

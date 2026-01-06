@@ -193,7 +193,7 @@
                                 </a>
                             @else
                                 <span class="px-6 py-3 bg-gray-800/50 text-gray-600 rounded-2xl border border-gray-700 cursor-not-allowed text-xs font-bold uppercase tracking-widest">
-                                    Oldest
+                                    Oldeste
                                 </span>
                             @endif
                         </div>

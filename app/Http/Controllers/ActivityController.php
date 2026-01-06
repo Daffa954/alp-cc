@@ -8,14 +8,43 @@ use Illuminate\Support\Facades\Auth;
 
 class ActivityController extends Controller
 {
-    public function index()
-    {
-        // Ambil data milik user yang sedang login, urutkan dari yang terbaru
-        $activities = Activity::where('user_id', Auth::id())
-            ->orderBy('date_start', 'desc')
-            ->paginate(10);
+    // public function index()
+    // {
+    //     // Ambil data milik user yang sedang login, urutkan dari yang terbaru
+    //     $activities = Activity::where('user_id', Auth::id())
+    //         ->orderBy('date_start', 'desc')
+    //         ->paginate(10);
 
-        return view('activities.index', compact('activities'));
+    //     return view('activities.index', compact('activities'));
+    // }
+    public function index(Request $request)
+    {
+        $user = Auth::user();
+        $query = Activity::where('user_id', $user->id);
+
+        if ($request->has('filter_date')) {
+            $query->whereDate('date_start', '<=', $request->filter_date);
+        }
+
+        $activities = $query->orderBy('date_start', 'desc')->paginate(5);
+
+        // Month Stats
+        $totalCost = Activity::where('user_id', $user->id)
+            ->whereMonth('date_start', now()->month)
+            ->sum('cost_to_there');
+
+        $totalKm = Activity::where('user_id', $user->id)
+            ->whereMonth('date_start', now()->month)
+            ->sum('distance_in_km');
+
+        $popularTransport = Activity::where('user_id', $user->id)
+            ->whereMonth('date_start', now()->month)
+            ->selectRaw('transportation, COUNT(*) as count')
+            ->groupBy('transportation')
+            ->orderByDesc('count')
+            ->first();
+
+        return view('activities.index', compact('activities', 'totalCost', 'totalKm', 'popularTransport'));
     }
 
     public function create()

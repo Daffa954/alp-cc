@@ -8,14 +8,46 @@ use Illuminate\Support\Facades\Auth;
 
 class IncomeController extends Controller
 {
-    public function index()
-    {
-        // Tampilkan pemasukan user, urutkan dari tanggal terbaru
-        $incomes = Income::where('user_id', Auth::id())
-            ->orderBy('date_received', 'desc')
-            ->paginate(10);
+    // public function index()
+    // {
+    //     // Tampilkan pemasukan user, urutkan dari tanggal terbaru
+    //     $incomes = Income::where('user_id', Auth::id())
+    //         ->orderBy('date_received', 'desc')
+    //         ->paginate(10);
 
-        return view('incomes.index', compact('incomes'));
+    //     return view('incomes.index', compact('incomes'));
+    // }
+
+    public function index(Request $request)
+    {
+        $user = Auth::user();
+        $query = Income::where('user_id', $user->id);
+
+        // Filter Logic: Jump to date
+        if ($request->has('filter_date')) {
+            $query->whereDate('date_received', '<=', $request->filter_date);
+        }
+
+        $incomes = $query->orderBy('date_received', 'desc')->paginate(7);
+
+        // Summary Statistics for current month
+        $totalIncome = Income::where('user_id', $user->id)
+            ->whereMonth('date_received', now()->month)
+            ->sum('amount');
+
+        $averageDaily = Income::where('user_id', $user->id)
+            ->whereDate('date_received', now())
+            ->avg('amount') ?? 0;
+
+        // Source breakdown for current month
+        $sources = Income::where('user_id', $user->id)
+            ->whereMonth('date_received', now()->month)
+            ->selectRaw('source, SUM(amount) as total, COUNT(*) as count')
+            ->groupBy('source')
+            ->orderByDesc('total')
+            ->get();
+
+        return view('incomes.index', compact('incomes', 'totalIncome', 'averageDaily', 'sources'));
     }
 
     public function create()

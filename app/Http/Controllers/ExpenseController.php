@@ -11,15 +11,27 @@ class ExpenseController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
         
         // Get expenses with pagination
-        $expenses = Expense::where('user_id', $user->id)
-            ->with('activity')
-            ->orderBy('created_at', 'desc')
-            ->paginate(7);
+        // $expenses = Expense::where('user_id', $user->id)
+        //     ->with('activity')
+        //     // ->orderBy('created_at', 'desc')
+        //     ->orderBy('date', 'desc')
+        //     ->paginate(10);
+
+        // 1. Initialize query
+        $query = Expense::where('user_id', $user->id)->with('activity');
+
+        // 2. Add Filter: If a date is picked, show records from that date and older
+        if ($request->has('filter_date')) {
+            $query->whereDate('date', '<=', $request->filter_date);
+        }
+
+        // 3. Order and Paginate
+        $expenses = $query->orderBy('date', 'desc')->paginate(10);
         
         // Get summary data
         $totalExpense = Expense::where('user_id', $user->id)

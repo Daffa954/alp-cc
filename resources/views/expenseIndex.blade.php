@@ -53,7 +53,7 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 
-                <div class="lg:col-span-2 space-y-8">
+                {{-- <div class="lg:col-span-2 space-y-8">
                     @php
                         // PERBAIKAN LOGIC GROUPING (ANTI ERROR)
                         $groupedExpenses = $expenses->getCollection()->groupBy(function($item) {
@@ -147,6 +147,169 @@
                     <div class="mt-6">
                         {{ $expenses->links() }}
                     </div>
+                </div> --}}
+                <div class="lg:col-span-2 space-y-6">
+                    @php
+                        // Group the paginated items by their date
+                        $groupedExpenses = $expenses->getCollection()->groupBy(function($item) {
+                            return \Carbon\Carbon::parse($item->date)->format('Y-m-d');
+                        });
+                    @endphp
+                    <div class="mt-10 flex flex-col items-center space-y-4">
+                        <div class="flex items-center space-x-4">
+                            @if ($expenses->onFirstPage())
+                                <span class="px-6 py-3 bg-gray-800/50 text-gray-600 rounded-2xl border border-gray-700 cursor-not-allowed text-xs font-bold uppercase tracking-widest">
+                                    Newest
+                                </span>
+                            @else
+                                <a href="{{ $expenses->previousPageUrl() }}" class="px-6 py-3 bg-gray-800 text-white rounded-2xl border border-gray-700 hover:border-orange-500 transition-all text-xs font-bold uppercase tracking-widest">
+                                    < Newer
+                                </a>
+                            @endif
+                            
+                            @if ($expenses->count() > 0)
+                                <form action="{{ route('expenses.index') }}" method="GET" class="relative">
+                                    <div onclick="document.getElementById('jump_to_date').showPicker()" 
+                                        class="px-6 py-2 bg-gray-800 border border-gray-700 rounded-2xl text-orange-400 font-bold text-sm shadow-xl hover:border-orange-500 hover:bg-gray-750 transition-all cursor-pointer group flex items-center">
+                                        
+                                        <i class="far fa-calendar-alt mr-2 group-hover:scale-110 transition-transform"></i>
+                                        
+                                        {{ \Carbon\Carbon::parse($expenses->first()->date)->format('d M') }} 
+                                        — 
+                                        {{ \Carbon\Carbon::parse($expenses->last()->date)->format('d M Y') }}
+
+                                        <input type="date" 
+                                            id="jump_to_date" 
+                                            name="filter_date" 
+                                            class="absolute inset-0 opacity-0 cursor-pointer" 
+                                            onchange="this.form.submit()">
+                                    </div>
+                                </form>
+                            @endif
+
+                            @if ($expenses->hasMorePages())
+                                <a href="{{ $expenses->nextPageUrl() }}" class="px-6 py-3 bg-gray-800 text-white rounded-2xl border border-gray-700 hover:border-orange-500 transition-all text-xs font-bold uppercase tracking-widest">
+                                    Older >
+                                </a>
+                            @else
+                                <span class="px-6 py-3 bg-gray-800/50 text-gray-600 rounded-2xl border border-gray-700 cursor-not-allowed text-xs font-bold uppercase tracking-widest">
+                                    Oldest
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+
+                    {{-- <div class="mt-10 flex flex-col items-center space-y-4">
+                        
+
+                        <div class="flex items-center space-x-4">
+                            @if ($expenses->onFirstPage())
+                                <span class="px-6 py-3 bg-gray-800/50 text-gray-600 rounded-2xl border border-gray-700 cursor-not-allowed text-xs font-bold uppercase">Newest</span>
+                            @else
+                                <a href="{{ $expenses->previousPageUrl() }}" class="px-6 py-3 bg-gray-800 text-white rounded-2xl border border-gray-700 hover:border-orange-500 transition-all text-xs font-bold uppercase">< Newer</a>
+                            @endif
+                            
+                            @if ($expenses->count() > 0)
+                                <div class="px-6 py-2 bg-gray-800 border border-gray-700 rounded-2xl text-orange-400 font-bold text-sm shadow-xl">
+                                    <i class="far fa-calendar-alt mr-2"></i>
+                                    {{ \Carbon\Carbon::parse($expenses->first()->date)->format('d M') }} 
+                                    — 
+                                    {{ \Carbon\Carbon::parse($expenses->last()->date)->format('d M Y') }}
+                                </div>
+                            @endif
+
+                            @if ($expenses->hasMorePages())
+                                <a href="{{ $expenses->nextPageUrl() }}" class="px-6 py-3 bg-gray-800 text-white rounded-2xl border border-gray-700 hover:border-orange-500 transition-all text-xs font-bold uppercase">Older ></a>
+                            @else
+                                <span class="px-6 py-3 bg-gray-800/50 text-gray-600 rounded-2xl border border-gray-700 cursor-not-allowed text-xs font-bold uppercase">Oldest</span>
+                            @endif
+                        </div>
+                    </div> --}}
+
+                    @forelse($groupedExpenses as $date => $dailyItems)
+                        <div class="bg-gray-800 rounded-3xl border border-gray-700 shadow-xl overflow-hidden animate-fade-in-up">
+                            <div class="bg-gray-750/50 p-5 border-b border-gray-700 flex justify-between items-center">
+                                <div class="flex items-center space-x-3">
+                                    <div class="bg-orange-500/20 text-orange-400 border border-orange-500/30 text-xs font-bold px-3 py-1 rounded-xl uppercase tracking-wider">
+                                        {{ \Carbon\Carbon::parse($date)->translatedFormat('l') }}
+                                    </div>
+                                    <h3 class="text-white font-bold text-lg">
+                                        {{ \Carbon\Carbon::parse($date)->translatedFormat('d F Y') }}
+                                    </h3>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Total Hari Ini</p>
+                                    <span class="text-orange-400 font-black text-lg">
+                                        Rp {{ number_format($dailyItems->sum('amount'), 0, ',', '.') }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="divide-y divide-gray-700/50">
+                                @foreach($dailyItems as $expense)
+                                    <div class="p-5 hover:bg-gray-700/30 transition-colors group flex items-center justify-between">
+                                        <div class="flex items-center space-x-4">
+                                            <div class="h-12 w-12 rounded-2xl bg-gray-900/50 flex items-center justify-center text-orange-400 border border-gray-700 group-hover:border-orange-500/50 transition-all">
+                                                <i class="fas fa-receipt text-lg"></i>
+                                            </div>
+                                            <div>
+                                                <h4 class="text-white font-semibold group-hover:text-orange-400 transition-colors">
+                                                    {{ $expense->activity ? $expense->activity->title : ($expense->category ?? 'Pengeluaran') }}
+                                                </h4>
+                                                <div class="flex items-center space-x-2 mt-1">
+                                                    <span class="text-[10px] font-bold text-gray-500 uppercase">{{ $expense->category }}</span>
+                                                    @if($expense->description)
+                                                        <span class="text-gray-600 text-xs">•</span>
+                                                        <p class="text-gray-400 text-xs truncate max-w-[150px] md:max-w-xs">{{ $expense->description }}</p>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-center space-x-4">
+                                            <span class="text-white font-bold text-lg">Rp {{ number_format($expense->amount, 0, ',', '.') }}</span>
+                                            <div class="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <a href="{{ route('expenses.edit', $expense->id) }}" class="p-2 text-gray-400 hover:text-blue-400"><i class="fas fa-pen text-sm"></i></a>
+                                                <form action="{{ route('expenses.destroy', $expense->id) }}" method="POST">
+                                                    @csrf @method('DELETE')
+                                                    <button type="submit" class="p-2 text-gray-400 hover:text-red-400"><i class="fas fa-trash text-sm"></i></button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @empty
+                        <div class="text-center py-16 bg-gray-800 rounded-3xl border-2 border-dashed border-gray-700">
+                            <p class="text-gray-500">Belum ada data pengeluaran.</p>
+                        </div>
+                    @endforelse
+
+                    {{-- <div class="mt-10 flex flex-col items-center space-y-4">
+                        @if ($expenses->count() > 0)
+                            <div class="px-6 py-2 bg-gray-800 border border-gray-700 rounded-2xl text-orange-400 font-bold text-sm shadow-xl">
+                                <i class="far fa-calendar-alt mr-2"></i>
+                                {{ \Carbon\Carbon::parse($expenses->first()->date)->format('d M') }} 
+                                — 
+                                {{ \Carbon\Carbon::parse($expenses->last()->date)->format('d M Y') }}
+                            </div>
+                        @endif
+
+                        <div class="flex items-center space-x-4">
+                            @if ($expenses->onFirstPage())
+                                <span class="px-6 py-3 bg-gray-800/50 text-gray-600 rounded-2xl border border-gray-700 cursor-not-allowed text-xs font-bold uppercase">Newer</span>
+                            @else
+                                <a href="{{ $expenses->previousPageUrl() }}" class="px-6 py-3 bg-gray-800 text-white rounded-2xl border border-gray-700 hover:border-orange-500 transition-all text-xs font-bold uppercase">< Newer</a>
+                            @endif
+
+                            @if ($expenses->hasMorePages())
+                                <a href="{{ $expenses->nextPageUrl() }}" class="px-6 py-3 bg-gray-800 text-white rounded-2xl border border-gray-700 hover:border-orange-500 transition-all text-xs font-bold uppercase">Older ></a>
+                            @else
+                                <span class="px-6 py-3 bg-gray-800/50 text-gray-600 rounded-2xl border border-gray-700 cursor-not-allowed text-xs font-bold uppercase">Older</span>
+                            @endif
+                        </div>
+                    </div> --}}
                 </div>
 
                 <div class="lg:col-span-1">

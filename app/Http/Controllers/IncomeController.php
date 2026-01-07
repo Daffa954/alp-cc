@@ -94,33 +94,39 @@ class IncomeController extends Controller
         return view('incomes.edit', compact('income'));
     }
 
-    public function update(Request $request, Income $income)
-    {
-        if ($income->user_id !== Auth::id()) {
-            abort(403);
-        }
+    // app/Http/Controllers/IncomeController.php
 
-        // 1. Bersihkan format ribuan
-        if ($request->has('amount')) {
-            $request->merge([
-                'amount' => str_replace('.', '', $request->amount)
-            ]);
-        }
-
-        // 2. Validasi
-        $request->validate([
-            'source' => 'nullable|string|max:255',
-            'amount' => 'required|numeric|min:0',
-            'date_received' => 'required|date',
-            'notes' => 'nullable|string',
-        ]);
-
-        // 3. Update
-        $income->update($request->all());
-
-        return redirect()->route('incomes.index')->with('success', 'Pemasukan berhasil diperbarui!');
+public function update(Request $request, Income $income)
+{
+    if ($income->user_id !== Auth::id()) {
+        abort(403);
     }
 
+    // 1. Bersihkan format ribuan
+    if ($request->has('amount')) {
+        $request->merge([
+            'amount' => str_replace('.', '', $request->amount)
+        ]);
+    }
+
+    // 2. Validasi
+    $validatedData = $request->validate([
+        'source' => 'nullable|string|max:255',
+        'amount' => 'required|numeric|min:0',
+        'date_received' => 'required|date',
+        'notes' => 'nullable|string',
+        // 'is_regular' tidak perlu divalidasi disini karena kita ambil manual di bawah
+    ]);
+
+    // 3. Tambahkan logika boolean manual
+    // INI PENTING: Karena HTML tidak mengirim value jika checkbox kosong (unchecked)
+    $validatedData['is_regular'] = $request->boolean('is_regular');
+
+    // 4. Update
+    $income->update($validatedData);
+
+    return redirect()->route('incomes.index')->with('success', 'Pemasukan berhasil diperbarui!');
+}
     public function destroy(Income $income)
     {
         if ($income->user_id !== Auth::id()) {

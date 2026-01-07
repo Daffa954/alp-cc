@@ -419,36 +419,7 @@
 
                     <div class="flex items-center space-x-4">
                         <!-- Notifications -->
-                        <button class="relative p-2 text-gray-300 hover:text-orange">
-                            <i class="fas fa-bell text-xl"></i>
-                            <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                        </button>
-
-                        <!-- Quick Add -->
-                        <div class="relative">
-                            <button id="quickAddBtn" class="btn-primary text-white px-4 py-2 rounded-xl">
-                                <i class="fas fa-plus mr-2"></i>Quick Add
-                            </button>
-                            <!-- Quick Add Dropdown -->
-                            <div id="quickAddMenu"
-                                class="hidden absolute right-0 mt-2 w-48 bg-gray-800 rounded-xl shadow-lg border border-gray-700 py-2 z-50">
-                                <a href=""
-                                    class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange transition">
-                                    <i class="fas fa-minus-circle text-red-400 mr-3"></i>
-                                    <span>Add Expense</span>
-                                </a>
-                                <a href=""
-                                    class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange transition">
-                                    <i class="fas fa-plus-circle text-green-400 mr-3"></i>
-                                    <span>Add Income</span>
-                                </a>
-                                <a href=""
-                                    class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange transition">
-                                    <i class="fas fa-map-marker-alt text-blue-400 mr-3"></i>
-                                    <span>Add Activity</span>
-                                </a>
-                            </div>
-                        </div>
+                        
                     </div>
                 </div>
             </header>

@@ -29,8 +29,8 @@ class ReportController extends Controller
 
         // --- PERBAIKAN: Ambil Semua Tanggal (Expense, Income, Activity) ---
         // Ambil range view kalender (H-1 bulan s/d H+1 bulan agar navigasi lancar)
-        $viewStart = Carbon::parse($date)->startOfMonth()->subMonth(); 
-        $viewEnd   = Carbon::parse($date)->endOfMonth()->addMonth();
+        $viewStart = Carbon::parse($date)->startOfMonth()->subMonth();
+        $viewEnd = Carbon::parse($date)->endOfMonth()->addMonth();
 
         // Panggil helper baru
         $dates = $this->getAllTransactionDates($user->id, $viewStart, $viewEnd);
@@ -50,7 +50,7 @@ class ReportController extends Controller
         $user = Auth::user();
         $report = FinancialInsight::where('user_id', $user->id)->findOrFail($id);
 
-        $date = $report->created_at->format('Y-m-d'); 
+        $date = $report->created_at->format('Y-m-d');
         if ($report->type === 'weekly') {
             $parts = explode('-', $report->period_key);
             $date = Carbon::now()->setISODate($parts[0], substr($parts[1], 1))->startOfWeek()->format('Y-m-d');
@@ -58,9 +58,9 @@ class ReportController extends Controller
             $date = $report->period_key . '-01';
         }
 
-        $viewStart = Carbon::parse($date)->startOfMonth()->subMonth(); 
-        $viewEnd   = Carbon::parse($date)->endOfMonth()->addMonth();
-        
+        $viewStart = Carbon::parse($date)->startOfMonth()->subMonth();
+        $viewEnd = Carbon::parse($date)->endOfMonth()->addMonth();
+
         $dates = $this->getAllTransactionDates($user->id, $viewStart, $viewEnd);
 
         return view('reports.index', [
@@ -68,8 +68,8 @@ class ReportController extends Controller
             'type' => $report->type,
             'date' => $date,
             'history' => FinancialInsight::where('user_id', $user->id)->where('id', '!=', $id)->latest()->limit(5)->get(),
-            'dates' => $dates, 
-            'is_detail_view' => true 
+            'dates' => $dates,
+            'is_detail_view' => true
         ]);
     }
 
@@ -89,7 +89,9 @@ class ReportController extends Controller
 
         $period = $this->getPeriodMetadata($type, $date);
         $metrics = $this->getFinancialMetrics($user, $period);
-
+        if ($metrics['total_income'] == 0 && $metrics['total_expense'] == 0) {
+            return back()->with('error', 'Data transaksi kosong. Silakan tambah Pemasukan atau Pengeluaran terlebih dahulu sebelum meminta analisis AI.');
+        }
         $contextData = [
             'period_name' => $period['name'],
             'total_income' => $metrics['total_income'],
@@ -172,12 +174,15 @@ class ReportController extends Controller
         }
 
         return [
-            'start' => $refDate->copy()->startOfMonth(),
-            'end' => $refDate->copy()->endOfMonth(),
-            'key' => $refDate->format('Y-m'),
-            'name' => "Bulan " . $refDate->translatedFormat('F Y'),
-            'prev_start' => $refDate->copy()->subMonth()->startOfMonth(),
-            'prev_end' => $refDate->copy()->subMonth()->endOfMonth(),
+            'start' => $refDate->copy()->subMonth()->startOfDay(), // Mundur 1 bulan
+            'end' => $refDate->copy()->endOfDay(), // Tanggal pilihan user
+
+            'key' => $refDate->format('Y-m-d') . '-rolling', // Key unik baru
+            'name' => "30 Hari Terakhir (" . $refDate->copy()->subMonth()->format('d M') . " - " . $refDate->format('d M Y') . ")",
+
+            // Periode pembanding juga ikut mundur
+            'prev_start' => $refDate->copy()->subMonths(2)->startOfDay(),
+            'prev_end' => $refDate->copy()->subMonth()->endOfDay(),
         ];
     }
 
@@ -202,14 +207,16 @@ class ReportController extends Controller
         // Income Structure Logic
         $fixedIncome = $incomes->where('is_regular', true)->sum('amount');
         $variableIncome = $incomes->where('is_regular', false)->sum('amount');
-        
+
         $incomeStructure = "Tidak ada pemasukan.";
         if ($totalIncome > 0) {
-            if ($fixedIncome > 0 && $variableIncome == 0) $incomeStructure = "100% Stabil (Gaji Tetap).";
-            elseif ($fixedIncome == 0 && $variableIncome > 0) $incomeStructure = "100% Fluktuatif (Freelance).";
+            if ($fixedIncome > 0 && $variableIncome == 0)
+                $incomeStructure = "100% Stabil (Gaji Tetap).";
+            elseif ($fixedIncome == 0 && $variableIncome > 0)
+                $incomeStructure = "100% Fluktuatif (Freelance).";
             else {
-                $pct = round(($fixedIncome/$totalIncome)*100);
-                $incomeStructure = "HYBRID: {$pct}% Tetap + " . (100-$pct) . "% Variabel.";
+                $pct = round(($fixedIncome / $totalIncome) * 100);
+                $incomeStructure = "HYBRID: {$pct}% Tetap + " . (100 - $pct) . "% Variabel.";
             }
         }
 
@@ -218,7 +225,8 @@ class ReportController extends Controller
         $avg = $daily->count() > 0 ? $daily->avg() : 0;
         $wastefulDates = [];
         foreach ($daily as $dt => $amt) {
-            if ($amt > ($avg * 1.5)) $wastefulDates[] = $dt;
+            if ($amt > ($avg * 1.5))
+                $wastefulDates[] = $dt;
         }
 
         return [

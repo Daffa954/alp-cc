@@ -16,6 +16,7 @@
                 @csrf
                 @method('PUT')
 
+                {{-- Sumber --}}
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-2">Sumber Pemasukan</label>
                     <input type="text" name="source"
@@ -23,6 +24,7 @@
                         value="{{ old('source', $income->source) }}">
                 </div>
 
+                {{-- Jumlah --}}
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-2">Jumlah (Rp)</label>
                     <div class="relative">
@@ -35,6 +37,7 @@
                     </div>
                 </div>
 
+                {{-- Tanggal --}}
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-2">Tanggal Diterima</label>
                     <input type="date" name="date_received" required
@@ -43,6 +46,17 @@
                         style="color-scheme: dark;">
                 </div>
 
+                {{-- TAMBAHAN: Checkbox Is Regular --}}
+                <div class="flex items-center bg-gray-900/50 p-4 rounded-xl border border-gray-700">
+                    <input type="checkbox" id="is_regular" name="is_regular" value="1"
+                        class="w-5 h-5 text-[#ff6b00] bg-gray-900 border-gray-700 rounded focus:ring-[#ff6b00] focus:ring-offset-gray-800"
+                        {{ old('is_regular', $income->is_regular) ? 'checked' : '' }}>
+                    <label for="is_regular" class="ml-3 text-sm font-medium text-gray-300 cursor-pointer select-none">
+                        Pemasukan Tetap (Gaji bulanan, dll)
+                    </label>
+                </div>
+
+                {{-- Catatan --}}
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-2">Catatan</label>
                     <textarea name="notes" rows="3"

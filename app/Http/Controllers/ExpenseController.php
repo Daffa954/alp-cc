@@ -127,30 +127,41 @@ class ExpenseController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
+    /**
+     * Show the form for editing the specified resource.
+     */
     public function edit(Expense $expense)
-    {
-        
+    {        
+        if ($expense->user_id !== Auth::id()) {
+            abort(403);
+        }
+
         $user = Auth::user();
+        
+        // Ambil aktivitas untuk dropdown (Opsional, jika fitur activity dipakai)
         $recentActivities = Activity::where('user_id', $user->id)
             ->orderBy('date_start', 'desc')
             ->limit(10)
             ->get();
         
+        // Daftar Kategori (Samakan dengan create)
         $categories = [
-            'food' => 'Food & Dining',
-            'transportation' => 'Transportation',
-            'shopping' => 'Shopping',
-            'entertainment' => 'Entertainment',
-            'housing' => 'Housing & Utilities',
-            'health' => 'Health & Medical',
-            'education' => 'Education',
-            'personal' => 'Personal Care',
-            'travel' => 'Travel',
-            'gifts' => 'Gifts & Donations',
-            'other' => 'Other'
+            'Food & Dining' => 'Makan & Minum',
+            'Transportation' => 'Transportasi',
+            'Shopping' => 'Belanja',
+            'Entertainment' => 'Hiburan',
+            'Housing & Utilities' => 'Tagihan & Rumah',
+            'Health & Medical' => 'Kesehatan',
+            'Education' => 'Pendidikan',
+            'Personal Care' => 'Perawatan Diri',
+            'Travel' => 'Travel',
+            'Gifts & Donations' => 'Hadiah & Amal',
+            'Other' => 'Lainnya'
         ];
         
-        return view('expenses.edit', compact('expense', 'recentActivities', 'categories'));
+        // Pastikan nama view sesuai folder Anda: 'expenses.edit' atau 'expenseEdit'
+        // Jika file ada di resources/views/expenses/edit.blade.php gunakan 'expenses.edit'
+        return view('expenseEdit', compact('expense', 'recentActivities', 'categories'));
     }
 
     /**
@@ -158,21 +169,32 @@ class ExpenseController extends Controller
      */
     public function update(Request $request, Expense $expense)
     {
+        if ($expense->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        // 1. PENTING: Hapus titik ribuan sebelum validasi
+        if ($request->has('amount')) {
+            $request->merge([
+                'amount' => str_replace('.', '', $request->input('amount'))
+            ]);
+        }
         
+        // 2. Validasi (Ganti 'name' jadi 'description' sesuai DB)
         $validated = $request->validate([
             'amount' => 'required|numeric|min:0',
             'category' => 'required|string|max:100',
-            'description' => 'nullable|string|max:500',
+            'description' => 'required|string|max:500', // Wajib ada karena di View kita pakai ini
             'activity_id' => 'nullable|exists:activities,id',
             'date' => 'required|date',
         ]);
         
+        // 3. Update
         $expense->update($validated);
         
         return redirect()->route('expenses.index')
-            ->with('success', 'Expense updated successfully!');
+            ->with('success', 'Pengeluaran berhasil diperbarui!');
     }
-
     /**
      * Remove the specified resource from storage.
      */

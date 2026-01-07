@@ -9,10 +9,10 @@
                     <div class="p-3 bg-gray-700 rounded-xl">
                         <i class="fas fa-wallet text-orange text-xl"></i>
                     </div>
-                    <span class="text-sm text-gray-400">This Month</span>
+                    <span class="text-sm text-gray-400">Bulan ini</span>
                 </div>
                 <h3 class="text-2xl font-bold text-white mb-1">Rp {{ number_format($balance, 0, ',', '.') }}</h3>
-                <p class="text-gray-400">Net Balance</p>
+                <p class="text-gray-400">Uang Saya</p>
             </div>
 
             <div class="stat-card p-6 rounded-2xl">
@@ -20,10 +20,10 @@
                     <div class="p-3 bg-gray-700 rounded-xl">
                         <i class="fas fa-money-bill-wave text-green-400 text-xl"></i>
                     </div>
-                    <span class="text-sm text-gray-400">This Month</span>
+                    <span class="text-sm text-gray-400">Bulan ini</span>
                 </div>
                 <h3 class="text-2xl font-bold text-white mb-1">Rp {{ number_format($totalIncome, 0, ',', '.') }}</h3>
-                <p class="text-gray-400">Total Income</p>
+                <p class="text-gray-400">Total Pendapatan</p>
             </div>
 
             <div class="stat-card p-6 rounded-2xl">
@@ -31,10 +31,10 @@
                     <div class="p-3 bg-gray-700 rounded-xl">
                         <i class="fas fa-receipt text-red-400 text-xl"></i>
                     </div>
-                    <span class="text-sm text-gray-400">This Month</span>
+                    <span class="text-sm text-gray-400">Bulan ini</span>
                 </div>
                 <h3 class="text-2xl font-bold text-white mb-1">Rp {{ number_format($totalExpense, 0, ',', '.') }}</h3>
-                <p class="text-gray-400">Total Expenses</p>
+                <p class="text-gray-400">Total Pengeluaran</p>
             </div>
 
             <div class="stat-card p-6 rounded-2xl">
@@ -42,10 +42,10 @@
                     <div class="p-3 bg-gray-700 rounded-xl">
                         <i class="fas fa-chart-line text-purple-400 text-xl"></i>
                     </div>
-                    <span class="text-sm text-gray-400">This Week</span>
+                    <span class="text-sm text-gray-400">Minggu ini</span>
                 </div>
                 <h3 class="text-2xl font-bold text-white mb-1">Rp {{ number_format($weeklyAverage, 0, ',', '.') }}</h3>
-                <p class="text-gray-400">Average Daily</p>
+                <p class="text-gray-400">Rata rata harian</p>
             </div>
         </div>
 

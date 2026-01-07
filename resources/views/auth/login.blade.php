@@ -3,7 +3,7 @@
 @section('title', 'Login')
 
 @section('content')
-<div class="bg-white card-shadow rounded-2xl p-8">
+<div class="bg-slate-100 card-shadow rounded-2xl p-8">
     <h2 class="text-2xl font-bold text-slate-800 text-center mb-6">Masuk ke Akun Anda</h2>
 
     @if(session('success'))
@@ -40,7 +40,7 @@
         <!-- Email -->
         <div class="mb-6">
             <label for="email" class="block text-sm font-medium text-slate-700 mb-2">
-                <i class="fas fa-envelope mr-2 text-blue-500"></i>Alamat Email
+                <i class="fas fa-envelope mr-2 text-[#ff6b00]"></i>Alamat Email
             </label>
             <input
                 type="email"
@@ -58,10 +58,10 @@
         <div class="mb-6">
             <div class="flex justify-between items-center mb-2">
                 <label for="password" class="block text-sm font-medium text-slate-700">
-                    <i class="fas fa-lock mr-2 text-blue-500"></i>Password
+                    <i class="fas fa-lock mr-2 text-[#ff6b00]"></i>Password
                 </label>
                 @if (Route::has('password.request'))
-                    <a href="{{ route('password.request') }}" class="text-sm text-blue-600 hover:text-blue-500 transition">
+                    <a href="{{ route('password.request') }}" class="text-sm text-[#ff911b] hover:text-[#fb6602] transition">
                         Lupa password?
                     </a>
                 @endif
@@ -90,7 +90,7 @@
         </div>
 
         <!-- Submit Button -->
-        <button type="submit" class="w-full btn-primary text-white font-semibold py-3 px-4 rounded-xl mb-6">
+        <button type="submit" class="w-full bg-[#ff720c] hover:bg-[#fb6602] text-white font-semibold py-3 px-4 rounded-xl mb-6">
             Masuk <i class="fas fa-sign-in-alt ml-2"></i>
         </button>
 
@@ -103,7 +103,7 @@
         <div class="text-center">
             <p class="text-sm text-slate-600">
                 Belum punya akun?
-                <a href="{{ route('register') }}" class="font-semibold text-blue-600 hover:text-blue-500 transition">
+                <a href="{{ route('register') }}" class="font-semibold text-[#ff911b] hover:text-[#fb6602] transition">
                     Daftar Sekarang
                 </a>
             </p>

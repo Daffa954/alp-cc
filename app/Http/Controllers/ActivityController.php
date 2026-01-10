@@ -20,7 +20,7 @@ class ActivityController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-        $query = Activity::where('user_id', $user->id);
+        $query = Activity::with('expenses')->where('user_id', $user->id);
 
         if ($request->has('filter_date')) {
             $query->whereDate('date_start', '<=', $request->filter_date);

@@ -247,30 +247,51 @@ class ReportController extends Controller
     /**
      * Tool C: Deteksi Tanggal Boros (Anomaly Detection)
      */
+    /**
+     * TOOL C: Deteksi Tanggal Boros (Anomaly Detection)
+     * ---------------------------------------------------
+     * Fungsi ini mencari tanggal-tanggal di mana user menghabiskan uang 
+     * secara tidak wajar (di atas rata-rata harian).
+     * * @param \Illuminate\Database\Eloquent\Collection $expenses
+     * @return array
+     */
     private function toolDetectAnomalies($expenses)
     {
-        if ($expenses->isEmpty())
-            return ['waste_count' => 0, 'waste_dates' => []];
+        // 1. Cek Data Kosong
+        if ($expenses->isEmpty()) {
+            return [
+                'waste_count' => 0,
+                'waste_dates' => []
+            ];
+        }
 
-        // Kelompokkan per hari
-        $daily = $expenses->groupBy('date')->map(fn($row) => $row->sum('amount'));
+        // 2. Hitung Total Pengeluaran Per Hari
+        // Hasil: Collection ['2023-10-01' => 100000, '2023-10-02' => 500000, ...]
+        $dailySpending = $expenses->groupBy('date')
+            ->map(fn($group) => $group->sum('amount'));
 
-        // Hitung rata-rata harian
-        $avgDaily = $daily->avg();
+        // 3. Hitung Rata-rata Harian
+        $avgDaily = $dailySpending->avg();
 
-        // Threshold: Dianggap boros jika pengeluaran > 1.5x rata-rata
-        $threshold = $avgDaily * 1.5;
+        // 4. Tentukan Ambang Batas (Threshold)
+        // Rumus: Rata-rata * 1.5 (Bisa diubah ke 2.0 jika ingin lebih longgar)
+        $threshold = $avgDaily * 2;
 
+        // 5. Filter Tanggal Boros
         $wasteDates = [];
-        foreach ($daily as $date => $amount) {
-            if ($amount > $threshold) {
+        foreach ($dailySpending as $date => $amount) {
+            // Syarat Boros:
+            // A. Nominal hari itu > Threshold (1.5x Rata-rata)
+            // B. Nominal hari itu > 50.000 (Agar pengeluaran kecil tidak dianggap boros saat rata-rata sangat kecil)
+            if ($amount > $threshold && $amount > 50000) {
                 $wasteDates[] = $date;
             }
         }
 
+        // 6. Return Data Matang
         return [
-            'waste_count' => count($wasteDates), // Dikirim ke AI
-            'waste_dates' => $wasteDates         // Disimpan ke DB
+            'waste_count' => count($wasteDates), // Dikirim ke AI (Hemat Token: Cuma butuh jumlahnya)
+            'waste_dates' => array_values($wasteDates) // Disimpan di DB untuk highlight merah di kalender
         ];
     }
 

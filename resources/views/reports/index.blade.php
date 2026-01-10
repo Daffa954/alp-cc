@@ -113,7 +113,8 @@
                             <div class="relative group">
                                 <div
                                     class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
-                                    <i class="fas fa-microchip"></i></div>
+                                    <i class="fas fa-microchip"></i>
+                                </div>
                                 <select name="ai_model"
                                     class="block w-full pl-10 pr-8 py-2.5 bg-gray-900 border border-gray-600 text-white text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 appearance-none cursor-pointer">
                                     {{-- <option value="auto" selected>🤖 Auto (Smart)</option>
@@ -122,7 +123,8 @@
                                 </select>
                                 <div
                                     class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
-                                    <i class="fas fa-chevron-down text-xs"></i></div>
+                                    <i class="fas fa-chevron-down text-xs"></i>
+                                </div>
                             </div>
                         </div>
 
@@ -204,36 +206,29 @@
 
                     {{-- BAGIAN REKOMENDASI (YANG DIPERBAIKI) --}}
                     {{-- ... kode sebelumnya ... --}}
-
                     <div class="mt-6 bg-gray-900/30 rounded-xl p-5 border border-gray-700">
                         <h4 class="text-white font-bold mb-3 flex items-center">
                             <i class="fas fa-lightbulb text-yellow-400 mr-2"></i> Saran Aksi:
                         </h4>
 
                         <ul class="space-y-2">
-                            @php
-                                // 1. Pecah string berdasarkan baris baru (\n) atau bullet point (-)
-                                // Regex ini menangkap baris baru yang mungkin diawali tanda strip
-                                $recommendations = preg_split(
-                                    '/\n-?/',
-                                    $report->ai_recommendation,
-                                    -1,
-                                    PREG_SPLIT_NO_EMPTY,
-                                );
-                            @endphp
-
-                            @forelse($recommendations as $rec)
-                                @php $cleanRec = trim($rec); @endphp
-
-                                @if (!empty($cleanRec))
-                                    <li class="flex items-start text-gray-300 text-sm">
-                                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2 flex-shrink-0"></i>
-                                        <span>{{ $cleanRec }}</span>
+                            @if (is_array($report->ai_recommendation) && count($report->ai_recommendation) > 0)
+                                @foreach ($report->ai_recommendation as $rec)
+                                    <li
+                                        class="flex items-start text-gray-300 text-sm bg-gray-800/50 p-3 rounded-lg border border-gray-700/50">
+                                        <i class="fas fa-check-circle text-green-500 mt-1 mr-3 flex-shrink-0"></i>
+                                        <span>{{ $rec }}</span>
                                     </li>
-                                @endif
-                            @empty
-                                <li class="text-gray-500 italic">Tidak ada rekomendasi khusus.</li>
-                            @endforelse
+                                @endforeach
+                            @elseif(is_string($report->ai_recommendation))
+                                {{-- Fallback jaga-jaga jika data lama masih string --}}
+                                <li class="flex items-start text-gray-300 text-sm">
+                                    <i class="fas fa-info-circle text-blue-500 mt-1 mr-3"></i>
+                                    <span>{{ $report->ai_recommendation }}</span>
+                                </li>
+                            @else
+                                <li class="text-gray-500 italic">Tidak ada rekomendasi spesifik.</li>
+                            @endif
                         </ul>
                     </div>
 

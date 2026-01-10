@@ -114,7 +114,13 @@ class FinancialAiService
         {
             \"status\": \"safe|warning|danger\",
             \"analysis\": \"...\",
-            \"recommendation\": \"...\"
+            \"recommendation\": [
+                \"Saran 1...\",
+                \"Saran 2...\",
+                \"Saran 3...\",
+                \"Saran 4 (opsional)...\",
+                \"...dan seterusnya\"
+            ]
         }";
     }
 
@@ -140,8 +146,20 @@ class FinancialAiService
 
             if (isset($decoded['status'])) {
                 // Format rekomendasi array ke string bullet points
-                if (isset($decoded['recommendation']) && is_array($decoded['recommendation'])) {
-                    $decoded['recommendation'] = implode("\n- ", $decoded['recommendation']);
+                // if (isset($decoded['recommendation']) && is_array($decoded['recommendation'])) {
+                //     $decoded['recommendation'] = implode("\n- ", $decoded['recommendation']);
+                // }
+                if (isset($decoded['recommendation'])) {
+                    // Jika AI bandel kasih string, kita paksa jadi array
+                    if (is_string($decoded['recommendation'])) {
+                        $decoded['recommendation'] = [$decoded['recommendation']];
+                    }
+                    // Jika null, kasih default array kosong
+                    if (is_null($decoded['recommendation'])) {
+                        $decoded['recommendation'] = [];
+                    }
+                } else {
+                    $decoded['recommendation'] = [];
                 }
                 return $decoded;
             }

@@ -56,5 +56,22 @@ Route::get('/debug-gemini-models', function () {
     $response = Http::get("https://generativelanguage.googleapis.com/v1beta/models?key={$apiKey}");
     return $response->json();
 });
-
+// routes/web.php
+Route::get('/test-email-preview', function () {
+    $user = \App\Models\User::first() ?? new \App\Models\User([
+        'name' => 'DAFFA KHOIRUL FAIZ',
+        'email' => 'dkhoirul05@gmail.com'
+    ]);
+    
+    $verificationUrl = URL::temporarySignedRoute(
+        'verification.verify',
+        now()->addMinutes(60),
+        ['id' => 1, 'hash' => sha1('test@example.com')]
+    );
+    
+    // Untuk Solusi 1
+   
+    // Untuk Solusi 4
+    return view('emails.verify-email-html', compact('user', 'verificationUrl'));
+});
 require __DIR__ . '/auth.php';

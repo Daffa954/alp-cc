@@ -10,6 +10,8 @@ use App\Models\Expense;
 use App\Observers\IncomeObserver;
 use App\Observers\ExpenseObserver;
 
+use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Notifications\Messages\MailMessage;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -31,5 +33,25 @@ class AppServiceProvider extends ServiceProvider
         // Registrasi Observer (Clean & Professional)
         Income::observe(IncomeObserver::class);
         Expense::observe(ExpenseObserver::class);
+
+         // Customize verification email
+    //    VerifyEmail::toMailUsing(function ($notifiable, $url) {
+    //     return (new MailMessage)
+    //         ->subject('Verifikasi Email - ' . config('app.name'))
+    //         ->view('emails.verify-email', [
+    //             'user' => $notifiable,
+    //             'verificationUrl' => $url
+    //         ]);
+    // });
+
+    VerifyEmail::toMailUsing(function ($notifiable, $url) {
+        return (new MailMessage)
+            ->subject('Verifikasi Email - FinanceHub')
+            ->view('emails.verify-email-html', [
+                'user' => $notifiable,
+                'verificationUrl' => $url
+            ]);
+    });
     }
+
 }

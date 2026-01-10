@@ -68,7 +68,6 @@ if ($report->user_id !== auth()->id()) {
         'history' => FinancialInsight::where('user_id', auth()->id())
                         ->where('id', '!=', $report->id) // Gunakan $report->id asli
                         ->latest()
-                        ->limit(5)
                         ->get(),
         'dates' => $dates ?? [], // Pastikan variabel $dates ada
         'is_detail_view' => true 

@@ -35,7 +35,7 @@ class FinancialInsight extends Model
     protected $casts = [
         // PENTING: Mengubah JSON di database menjadi Array PHP otomatis
         'wasteful_dates' => 'array', 
-        
+        'ai_recommendation' => 'array', //
         // Memastikan format angka desimal konsisten
         'total_expense' => 'decimal:2',
         'total_income' => 'decimal:2',

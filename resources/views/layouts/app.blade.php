@@ -337,29 +337,29 @@
                     <a href="{{ route('expenses.index') }}"
                         class="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange rounded-xl transition {{ request()->routeIs('expenses.*') ? 'active-nav' : '' }}">
                         <i class="fas fa-receipt w-5"></i>
-                        <span>Expenses</span>
+                        <span>Pengeluaran</span>
                     </a>
                     <a href="{{ route('incomes.index') }}"
                         class="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange rounded-xl transition {{ request()->routeIs('incomes.*') ? 'active-nav' : '' }}">
                         <i class="fas fa-money-bill-wave w-5"></i>
-                        <span>Income</span>
+                        <span>Pendapatan</span>
                     </a>
                     <a href="{{ route('activities.index') }}"
                         class="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange rounded-xl transition {{ request()->routeIs('activities.*') ? 'active-nav' : '' }}">
                         <i class="fas fa-map-marker-alt w-5"></i>
-                        <span>Activities</span>
+                        <span>Aktivitas</span>
                     </a>
                     <a href="{{ route('reports.index') }}"
                         class="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange rounded-xl transition {{ request()->routeIs('reports.*') ? 'active-nav' : '' }}">
                         <i class="fas fa-chart-bar w-5"></i>
-                        <span>Reports</span>
+                        <span>Laporan</span>
                     </a>
                     
                     <div class="pt-4 mt-4 border-t border-gray-700">
                         <a href="{{ route('profile.edit') }}"
                             class="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-orange rounded-xl transition">
                             <i class="fas fa-user-cog w-5"></i>
-                            <span>Settings</span>
+                            <span>Profil</span>
                         </a>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
@@ -384,15 +384,15 @@
                 </a>
                 <a href="" class="flex flex-col items-center text-gray-300 hover:text-orange transition">
                     <i class="fas fa-receipt"></i>
-                    <span class="text-xs mt-1">Expenses</span>
+                    <span class="text-xs mt-1">Pengeluaran</span>
                 </a>
-                <a href="" class="flex flex-col items-center text-gray-300 hover:text-orange transition">
-                    <i class="fas fa-plus-circle"></i>
-                    <span class="text-xs mt-1">Add</span>
+                 <a href="" class="flex flex-col items-center text-gray-300 hover:text-orange transition">
+                    <i class="fas fa-receipt"></i>
+                    <span class="text-xs mt-1">Pendapatan</span>
                 </a>
                 <a href="" class="flex flex-col items-center text-gray-300 hover:text-orange transition">
                     <i class="fas fa-chart-bar"></i>
-                    <span class="text-xs mt-1">Reports</span>
+                    <span class="text-xs mt-1">Laporan</span>
                 </a>
                 <a href="{{ route('profile.edit') }}"
                     class="flex flex-col items-center text-gray-300 hover:text-orange transition">

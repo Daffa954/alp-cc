@@ -3,10 +3,46 @@
     <x-slot name="header-subtitle">Kelola informasi profil dan keamanan akun Anda</x-slot>
 
     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 space-y-6">
+        {{-- resources/views/profile/partials/update-profile-information-form.blade.php --}}
+        {{-- Tambahkan di atas form atau di sidebar --}}
 
+        <div class="mb-6 p-4 bg-gray-700/50 rounded-lg border border-gray-600">
+            <h4 class="font-medium text-gray-300 mb-3 flex items-center">
+                <i class="fas fa-info-circle text-blue-400 mr-2"></i>
+                Informasi Saat Ini
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                <div>
+                    <span class="text-gray-400">Nama:</span>
+                    <p class="text-white">{{ $user->name }}</p>
+                </div>
+                <div>
+                    <span class="text-gray-400">Email:</span>
+                    <p class="text-white">{{ $user->email }}</p>
+                </div>
+                @if ($user->job)
+                    <div>
+                        <span class="text-gray-400">Pekerjaan:</span>
+                        <p class="text-white">{{ $user->job }}</p>
+                    </div>
+                @endif
+                @if ($user->job_location)
+                    <div>
+                        <span class="text-gray-400">Lokasi Kerja:</span>
+                        <p class="text-white">{{ $user->job_location }}</p>
+                    </div>
+                @endif
+                @if ($user->address)
+                    <div class="md:col-span-2">
+                        <span class="text-gray-400">Alamat:</span>
+                        <p class="text-white">{{ $user->address }}</p>
+                    </div>
+                @endif
+            </div>
+        </div>
         {{-- GRID LAYOUT: 2 Kolom di Desktop --}}
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            
+
             {{-- 1. UPDATE PROFILE INFORMATION --}}
             <div class="p-6 sm:p-8 bg-gray-800 border border-gray-700 shadow-xl rounded-2xl h-full">
                 <div class="flex items-center mb-4">
@@ -15,7 +51,7 @@
                     </div>
                     <h3 class="text-lg font-bold text-white">Informasi Profil</h3>
                 </div>
-                
+
                 <div class="max-w-xl">
                     @include('profile.partials.update-profile-information-form')
                 </div>
@@ -36,6 +72,8 @@
             </div>
 
         </div>
+
+
 
         {{-- 3. DELETE USER (DANGER ZONE) --}}
         <div class="p-6 sm:p-8 bg-red-900/10 border border-red-500/30 shadow-xl rounded-2xl">

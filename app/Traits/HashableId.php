@@ -15,25 +15,25 @@ trait HashableId
     {
         return Hashids::encode($this->getKey());
     }
-
+public function getHashIdAttribute()
+    {
+        return Hashids::encode($this->attributes['id']);
+    }
     /**
      * Menerjemahkan Hash di URL kembali menjadi ID angka saat query database.
      * Contoh: /expenses/Xk9dz/edit -> ID 1
      */
     public function resolveRouteBinding($value, $field = null)
     {
-        // Coba decode hashnya
+        // 1. Decode hash string (misal: 'k5') menjadi array angka
         $decoded = Hashids::decode($value);
 
-        // Jika hasil decode kosong (artinya hash tidak valid/asal-asalan), return null (404)
+        // 2. Jika gagal decode (kosong), return null (otomatis 404)
         if (empty($decoded)) {
             return null;
         }
 
-        // Ambil angka aslinya (array index ke-0)
-        $id = $decoded[0];
-
-        // Cari di database berdasarkan ID asli
-        return $this->where($this->getKeyName(), $id)->firstOrFail();
+        // 3. Cari data berdasarkan ID asli hasil decode
+        return $this->where('id', $decoded[0])->firstOrFail();
     }
 }

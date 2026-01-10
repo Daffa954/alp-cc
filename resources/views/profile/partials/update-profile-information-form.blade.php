@@ -1,64 +1,102 @@
-<section>
-    <header>
-        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-            {{ __('Profile Information') }}
-        </h2>
+{{-- resources/views/profile/partials/update-profile-information-form.blade.php --}}
+<form method="post" action="{{ route('profile.update') }}" class="space-y-6">
+    @csrf
+    @method('patch')
 
-        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            {{ __("Update your account's profile information and email address.") }}
-        </p>
-    </header>
+    {{-- Name --}}
+    <div class="space-y-2">
+        <x-input-label for="name" :value="__('Nama Lengkap')" class="text-gray-300" />
+        <x-text-input 
+            id="name" 
+            name="name" 
+            type="text" 
+            class="mt-1 block w-full bg-gray-700 border-gray-600 text-white" 
+            :value="old('name', $user->name)" 
+            required 
+            autofocus 
+            autocomplete="name" 
+            placeholder="Masukkan nama lengkap Anda"
+        />
+        <x-input-error class="mt-2" :messages="$errors->get('name')" />
+    </div>
 
-    <form id="send-verification" method="post" action="{{ route('verification.send') }}">
-        @csrf
-    </form>
+    {{-- Email --}}
+    <div class="space-y-2">
+        <x-input-label for="email" :value="__('Email')" class="text-gray-300" />
+        <x-text-input 
+            id="email" 
+            name="email" 
+            type="email" 
+            class="mt-1 block w-full bg-gray-700 border-gray-600 text-white" 
+            :value="old('email', $user->email)" 
+            required 
+            autocomplete="email"
+            placeholder="contoh@email.com"
+        />
+        <x-input-error class="mt-2" :messages="$errors->get('email')" />
+    </div>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
-        @csrf
-        @method('patch')
+    {{-- Address --}}
+    <div class="space-y-2">
+        <x-input-label for="address" :value="__('Alamat')" class="text-gray-300" />
+        <textarea 
+            id="address" 
+            name="address" 
+            rows="3"
+            class="mt-1 block w-full bg-gray-700 border-gray-600 text-white rounded-md shadow-sm focus:border-[#ff6b00] focus:ring-[#ff6b00]"
+            placeholder="Masukkan alamat lengkap Anda"
+        >{{ old('address', $user->address) }}</textarea>
+        <x-input-error class="mt-2" :messages="$errors->get('address')" />
+    </div>
 
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autofocus autocomplete="name" />
-            <x-input-error class="mt-2" :messages="$errors->get('name')" />
+    {{-- Job & Location --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {{-- Job --}}
+        <div class="space-y-2">
+            <x-input-label for="job" :value="__('Pekerjaan')" class="text-gray-300" />
+            <x-text-input 
+                id="job" 
+                name="job" 
+                type="text" 
+                class="mt-1 block w-full bg-gray-700 border-gray-600 text-white" 
+                :value="old('job', $user->job)" 
+                autocomplete="organization"
+                placeholder="Posisi / Profesi"
+            />
+            <x-input-error class="mt-2" :messages="$errors->get('job')" />
         </div>
 
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="username" />
-            <x-input-error class="mt-2" :messages="$errors->get('email')" />
-
-            @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
-                <div>
-                    <p class="text-sm mt-2 text-gray-800 dark:text-gray-200">
-                        {{ __('Your email address is unverified.') }}
-
-                        <button form="send-verification" class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
-                            {{ __('Click here to re-send the verification email.') }}
-                        </button>
-                    </p>
-
-                    @if (session('status') === 'verification-link-sent')
-                        <p class="mt-2 font-medium text-sm text-green-600 dark:text-green-400">
-                            {{ __('A new verification link has been sent to your email address.') }}
-                        </p>
-                    @endif
-                </div>
-            @endif
+        {{-- Job Location --}}
+        <div class="space-y-2">
+            <x-input-label for="job_location" :value="__('Lokasi Kerja')" class="text-gray-300" />
+            <x-text-input 
+                id="job_location" 
+                name="job_location" 
+                type="text" 
+                class="mt-1 block w-full bg-gray-700 border-gray-600 text-white" 
+                :value="old('job_location', $user->job_location)" 
+                autocomplete="organization-title"
+                placeholder="Kantor / Perusahaan"
+            />
+            <x-input-error class="mt-2" :messages="$errors->get('job_location')" />
         </div>
+    </div>
 
-        <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
-
-            @if (session('status') === 'profile-updated')
-                <p
-                    x-data="{ show: true }"
-                    x-show="show"
-                    x-transition
-                    x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-gray-600 dark:text-gray-400"
-                >{{ __('Saved.') }}</p>
-            @endif
+    {{-- Success Message --}}
+    @if (session('status') === 'profile-updated')
+        <div class="mt-4 p-3 bg-green-900/30 border border-green-500/50 rounded-lg">
+            <p class="text-sm text-green-400 flex items-center">
+                <i class="fas fa-check-circle mr-2"></i>
+                Profil berhasil diperbarui!
+            </p>
         </div>
-    </form>
-</section>
+    @endif
+
+    {{-- Submit Button --}}
+    <div class="flex items-center gap-4">
+        <x-primary-button class="bg-[#ff6b00] hover:bg-[#e55a00] border-[#ff6b00] focus:ring-[#ff6b00]">
+            <i class="fas fa-save mr-2"></i>
+            {{ __('Simpan Perubahan') }}
+        </x-primary-button>
+    </div>
+</form>

@@ -48,11 +48,12 @@ class ReportController extends Controller
     /**
      * Menampilkan detail laporan spesifik dari history
      */
-    public function show($id)
+    public function show(FinancialInsight $report)
     {
         $user = Auth::user();
-        $report = FinancialInsight::where('user_id', $user->id)->findOrFail($id);
-
+if ($report->user_id !== auth()->id()) {
+        abort(403);
+    }
         $date = $this->resolveDateFromKey($report->type, $report->period_key, $report->created_at);
 
         $viewStart = Carbon::parse($date)->startOfMonth()->subMonth();
@@ -61,13 +62,17 @@ class ReportController extends Controller
         $dates = $this->getAllTransactionDates($user->id, $viewStart, $viewEnd);
 
         return view('reports.index', [
-            'report' => $report,
-            'type' => $report->type,
-            'date' => $date,
-            'history' => FinancialInsight::where('user_id', $user->id)->where('id', '!=', $id)->latest()->limit(5)->get(),
-            'dates' => $dates,
-            'is_detail_view' => true
-        ]);
+        'report' => $report, // Langsung kirim object $report
+        'type' => $report->type,
+        'date' => $date,
+        'history' => FinancialInsight::where('user_id', auth()->id())
+                        ->where('id', '!=', $report->id) // Gunakan $report->id asli
+                        ->latest()
+                        ->limit(5)
+                        ->get(),
+        'dates' => $dates ?? [], // Pastikan variabel $dates ada
+        'is_detail_view' => true 
+    ]);
     }
 
     public function history()

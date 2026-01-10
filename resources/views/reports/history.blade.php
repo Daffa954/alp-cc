@@ -39,7 +39,8 @@
                                         Minggu ke-{{ substr($report->period_key, -2) }}
                                         ({{ substr($report->period_key, 0, 4) }})
                                     @else
-                                        {{ \Carbon\Carbon::createFromFormat('Y-m', $report->period_key)->format('F Y') }}
+                                        {{-- Fix: Parse safely by taking just the YYYY-MM part or using parse() --}}
+                                        {{ \Carbon\Carbon::parse(substr($report->period_key, 0, 7))->format('F Y') }}
                                     @endif
                                 </td>
                                 <td class="px-6 py-4">
@@ -71,7 +72,7 @@
                                     {{ $report->created_at->format('d M Y, H:i') }}
                                 </td>
                                 <td class="px-6 py-4 text-center">
-                                    <a href="{{ route('reports.show', $report->id) }}"
+                                    <a href="{{ route('reports.show', $report) }}"
                                         class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-700 text-gray-300 hover:bg-[#ff6b00] hover:text-white transition">
                                         <i class="fas fa-eye"></i>
                                     </a>

@@ -55,13 +55,13 @@
 
                 <div class="p-4 bg-gray-700/30 rounded-xl border border-gray-700">
                     <h4 class="text-sm font-bold text-gray-400 mb-3 uppercase">Detail Koordinat (Opsional)</h4>
-                    <div class="grid grid-cols-2 gap-4 mb-3">
-                        <input type="number" step="any" name="start_latitude" placeholder="Start Lat" class="bg-gray-900 border-gray-700 rounded-lg text-white text-sm">
-                        <input type="number" step="any" name="start_longitude" placeholder="Start Long" class="bg-gray-900 border-gray-700 rounded-lg text-white text-sm">
+                    <div class="grid-cols-2 gap-4 mb-3 hidden">
+                        <input type="number" step="any" name="start_latitude" value="0" placeholder="Start Lat" class="bg-gray-900 border-gray-700 rounded-lg text-white text-sm">
+                        <input type="number" step="any" name="start_longitude" value="0" placeholder="Start Long" class="bg-gray-900 border-gray-700 rounded-lg text-white text-sm">
                     </div>
-                    <div class="grid grid-cols-2 gap-4 mb-3">
-                        <input type="number" step="any" name="end_latitude" placeholder="End Lat" class="bg-gray-900 border-gray-700 rounded-lg text-white text-sm">
-                        <input type="number" step="any" name="end_longitude" placeholder="End Long" class="bg-gray-900 border-gray-700 rounded-lg text-white text-sm">
+                    <div class="grid-cols-2 gap-4 mb-3 hidden">
+                        <input type="number" step="any" name="end_latitude" value="0" placeholder="End Lat" class="bg-gray-900 border-gray-700 rounded-lg text-white text-sm">
+                        <input type="number" step="any" name="end_longitude" value="0" placeholder="End Long" class="bg-gray-900 border-gray-700 rounded-lg text-white text-sm">
                     </div>
                     <input type="number" step="0.01" name="distance_in_km" placeholder="Jarak (KM)" class="w-full bg-gray-900 border-gray-700 rounded-lg text-white text-sm">
                 </div>

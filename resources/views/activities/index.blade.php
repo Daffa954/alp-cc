@@ -179,8 +179,8 @@
                                                     <a href="{{ route('activities.edit', $activity) }}"
                                                         class="text-gray-500 hover:text-blue-400 transition">
                                                         <i class="fas fa-pen text-sm"></i>
-                                                    </a>
-                                                    <form action="{{ route('activities.destroy', $activity->id) }}"
+                                                    </a> 
+                                                    <form action="{{ route('activities.destroy', $activity)}}"
                                                         method="POST"
                                                         onsubmit="return confirm('Hapus aktivitas ini?');">
                                                         @csrf @method('DELETE')

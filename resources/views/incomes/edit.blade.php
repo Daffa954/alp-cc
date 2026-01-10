@@ -12,7 +12,7 @@
                 </a>
             </div>
 
-            <form method="POST" action="{{ route('incomes.update', $income->id) }}" class="space-y-6">
+            <form method="POST" action="{{ route('incomes.update', ['income' => $income]) }}" class="space-y-6">
                 @csrf
                 @method('PUT')
 
